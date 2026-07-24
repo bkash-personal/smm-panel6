@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Click 24 Pro - অনলাইনে কাজ করে আয় করুন</title>
+    <meta name="description" content="বাংলাদেশি বিশ্বস্ত পিটিসি এবং টাস্ক আর্নিং প্ল্যাটফর্ম। বিজ্ঞাপন দেখে, স্পিন করে এবং রেফার করে টাকা ইনকাম করুন বিকাশ, নগদ ও রকেটে।">
+    
+    <!-- Google Fonts: Hind Siliguri (Bangla) & Outfit (English) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-bolt-lightning text-gradient"></i>
+                <span class="logo-text">BD Click<span class="highlight">24</span></span>
+                <span class="badge-pro">PRO</span>
+            </div>
+            
+            <div class="nav-right">
+                <!-- Balance Chip -->
+                <div class="balance-chip" id="nav-balance-btn">
+                    <i class="fa-solid fa-wallet text-gold"></i>
+                    <span class="balance-text">৳<span id="user-balance">0.00</span></span>
+                </div>
+                
+                <!-- Admin Toggle -->
+                <button class="btn-icon" id="admin-toggle-btn" title="অ্যাডমিন প্যানেল">
+                    <i class="fa-solid fa-user-shield"></i>
+                </button>
+
+                <!-- Profile Menu -->
+                <button class="btn-icon" id="user-profile-btn" title="প্রোফাইল">
+                    <i class="fa-solid fa-circle-user"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-layout">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="sidebar">
+            <div class="user-card">
+                <div class="avatar" id="sidebar-avatar">U</div>
+                <div class="user-info">
+                    <h3 id="sidebar-username">ব্যবহারকারী</h3>
+                    <p class="user-phone" id="sidebar-phone">017XXXXXXXX</p>
+                    <div class="user-level"><i class="fa-solid fa-award text-gold"></i> VIP Level 1</div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-link active" data-target="dashboard">
+                    <i class="fa-solid fa-house"></i> ড্যাশবোর্ড
+                </a>
+                <a href="#ptc-ads" class="nav-link" data-target="ptc-ads">
+                    <i class="fa-solid fa-arrow-pointer"></i> এড ভিউ (PTC)
+                </a>
+                <a href="#spin-wheel" class="nav-link" data-target="spin-wheel">
+                    <i class="fa-solid fa-dharmachakra"></i> লাকি স্পিন
+                </a>
+                <a href="#video-tasks" class="nav-link" data-target="video-tasks">
+                    <i class="fa-solid fa-play"></i> ভিডিও দেখুন
+                </a>
+                <a href="#math-quiz" class="nav-link" data-target="math-quiz">
+                    <i class="fa-solid fa-calculator"></i> ম্যাথ কুইজ
+                </a>
+                <a href="#refer-earn" class="nav-link" data-target="refer-earn">
+                    <i class="fa-solid fa-users"></i> রেফার ও আয়
+                </a>
+                <a href="#withdraw" class="nav-link" data-target="withdraw">
+                    <i class="fa-solid fa-money-bill-transfer"></i> টাকা তুলুন (Withdraw)
+                </a>
+                <a href="#history" class="nav-link" data-target="history">
+                    <i class="fa-solid fa-receipt"></i> পেমেন্ট হিস্ট্রি
+                </a>
+                <a href="#admin-panel" class="nav-link admin-only-link" data-target="admin-panel" style="display: none;">
+                    <i class="fa-solid fa-user-gear"></i> অ্যাডমিন কন্ট্রোল
+                </a>
+            </nav>
+            
+            <div class="sidebar-notice">
+                <i class="fa-solid fa-bullhorn"></i>
+                <p>বিকাশ, নগদ ও রকেটে দ্রুত পেমেন্ট সুবিধা। প্রতিদিন রাত ১০টায় পেমেন্ট দেওয়া হয়!</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="content-body">
+
+            <!-- Global Ticker Notice -->
+            <div class="notice-bar">
+                <div class="notice-badge"><i class="fa-solid fa-bell"></i> নোটিশ:</div>
+                <marquee class="notice-text" scrollamount="5">
+                    স্বাগতম BD Click 24 Pro-তে! প্রতিদিন টাস্ক শেষ করে আয় করুন। সর্বনিম্ন ৫০ টাকা হলেই বিকাশ, নগদ বা রকেটে উইথড্র দিতে পারবেন। ভুল তথ্য দিলে অ্যাকাউন্ট ব্লক করা হবে।
+                </marquee>
+            </div>
+
+            <!-- SECTION 1: DASHBOARD -->
+            <section id="dashboard" class="tab-page active">
+                <!-- Banner Slider / Hero -->
+                <div class="hero-card">
+                    <div class="hero-text">
+                        <h2>সহজ টাস্ক পূরণ করে দৈনিক <span class="highlight">৩০০-৫০০ টাকা</span> আয় করুন!</h2>
+                        <p>প্রতিদিন ফ্রি ডেইলি বোনাস নিন এবং অ্যাড দেখে আয় শুরু করুন।</p>
+                        <button class="btn btn-primary btn-glow" onclick="switchTab('ptc-ads')">
+                            <i class="fa-solid fa-rocket"></i> কাজ শুরু করুন
+                        </button>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <i class="fa-solid fa-wallet text-gold"></i>
+                            <div class="stat-number">৳<span id="dash-balance">0.00</span></div>
+                            <div class="stat-label">বর্তমান ব্যালেন্স</div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fa-solid fa-chart-line text-cyan"></i>
+                            <div class="stat-number">৳<span id="dash-total-earned">0.00</span></div>
+                            <div class="stat-label">মোট ইনকাম</div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fa-solid fa-check-double text-green"></i>
+                            <div class="stat-number" id="dash-task-completed">0</div>
+                            <div class="stat-label">আজকের টাস্ক</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Check-In Bonus Banner -->
+                <div class="daily-bonus-card">
+                    <div class="bonus-info">
+                        <div class="bonus-icon"><i class="fa-solid fa-gift"></i></div>
+                        <div>
+                            <h3>দৈনিক বোনাস উপহার (Daily Bonus)</h3>
+                            <p>প্রতি ২৪ ঘণ্টায় একবার ৳৫.০০ ফ্রি বোনাস ক্লেইম করুন!</p>
+                        </div>
+                    </div>
+                    <button id="claim-daily-btn" class="btn btn-gold">
+                        <i class="fa-solid fa-hand-holding-dollar"></i> বোনাস নিন (৳৫)
+                    </button>
+                </div>
+
+                <!-- Quick Action Features Grid -->
+                <h3 class="section-title"><i class="fa-solid fa-grip"></i> জনপ্রিয় টাস্কসমূহ</h3>
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="switchTab('ptc-ads')">
+                        <div class="feature-icon bg-purple"><i class="fa-solid fa-arrow-pointer"></i></div>
+                        <h4>এড ভিউ (PTC)</h4>
+                        <p>১৫ সেকেন্ড ওয়েবসাইট ভিউ করে টাকা আয়</p>
+                        <span class="badge">১০টি টাস্ক বাকি</span>
+                    </div>
+
+                    <div class="feature-card" onclick="switchTab('spin-wheel')">
+                        <div class="feature-icon bg-orange"><i class="fa-solid fa-dharmachakra"></i></div>
+                        <h4>স্পিন হুইল</h4>
+                        <p>ভাগ্য পরীক্ষা করুন এবং পয়েন্ট জিতুন</p>
+                        <span class="badge">১০টি স্পিন বাকি</span>
+                    </div>
+
+                    <div class="feature-card" onclick="switchTab('video-tasks')">
+                        <div class="feature-icon bg-red"><i class="fa-solid fa-youtube"></i></div>
+                        <h4>ভিডিও ভিউ</h4>
+                        <p>ছোট ছোট ভিডিও দেখে আয় করুন</p>
+                        <span class="badge">৫টি ভিডিও</span>
+                    </div>
+
+                    <div class="feature-card" onclick="switchTab('math-quiz')">
+                        <div class="feature-icon bg-green"><i class="fa-solid fa-calculator"></i></div>
+                        <h4>ম্যাথ কুইজ</h4>
+                        <p>সহজ যোগ-বিয়োগের উত্তর দিয়ে আয়</p>
+                        <span class="badge">আনলিমিটেড</span>
+                    </div>
+
+                    <div class="feature-card" onclick="switchTab('refer-earn')">
+                        <div class="feature-icon bg-blue"><i class="fa-solid fa-share-nodes"></i></div>
+                        <h4>রেফার ও কমিশন</h4>
+                        <p>বন্ধুদের ইনভাইট করে ১০% কমিশন পান</p>
+                        <span class="badge">১০% কমিশন</span>
+                    </div>
+
+                    <div class="feature-card" onclick="switchTab('withdraw')">
+                        <div class="feature-icon bg-emerald"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <h4>তাৎক্ষণিক উইথড্র</h4>
+                        <p>বিকাশ, নগদ, রকেটে টাকা তুলুন</p>
+                        <span class="badge">৫০৳ মিনিমাম</span>
+                    </div>
+                </div>
+
+                <!-- Recent Payments Marquee Table -->
+                <h3 class="section-title"><i class="fa-solid fa-shield-check"></i> সাম্প্রতিক পেমেন্ট প্রুফ</h3>
+                <div class="recent-payouts-box">
+                    <div class="payout-row">
+                        <span class="payout-user"><i class="fa-solid fa-user-circle"></i> 01712***890</span>
+                        <span class="payout-method bkash-badge">Bkash</span>
+                        <span class="payout-amount">৳১৫০.০০</span>
+                        <span class="payout-status text-green"><i class="fa-solid fa-circle-check"></i> পেইড</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-user"><i class="fa-solid fa-user-circle"></i> 01844***112</span>
+                        <span class="payout-method nagad-badge">Nagad</span>
+                        <span class="payout-amount">৳১০০.০০</span>
+                        <span class="payout-status text-green"><i class="fa-solid fa-circle-check"></i> পেইড</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-user"><i class="fa-solid fa-user-circle"></i> 01990***543</span>
+                        <span class="payout-method rocket-badge">Rocket</span>
+                        <span class="payout-amount">৳২০০.০০</span>
+                        <span class="payout-status text-green"><i class="fa-solid fa-circle-check"></i> পেইড</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: PTC ADS -->
+            <section id="ptc-ads" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-arrow-pointer text-cyan"></i> পিটিসি এড ভিউ (Click & Earn)</h2>
+                    <p>বিজ্ঞাপনে ক্লিক করুন, টাইমার শেষ হওয়া পর্যন্ত অপেক্ষা করুন এবং উত্তর দিন!</p>
+                </div>
+
+                <div class="ads-grid" id="ads-container">
+                    <!-- Dynamic PTC Ads generated by JS -->
+                </div>
+            </section>
+
+            <!-- SECTION 3: SPIN WHEEL -->
+            <section id="spin-wheel" class="tab-page">
+                <div class="page-header text-center">
+                    <h2><i class="fa-solid fa-dharmachakra text-gold"></i> লাকি স্পিন হুইল</h2>
+                    <p>চাকা ঘুরিয়ে ফ্রি রিওয়ার্ড জিতুন! আপনার দৈনিক বাকি স্পিন: <strong id="spins-left-count">10</strong>টি</p>
+                </div>
+
+                <div class="spin-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <canvas id="wheel-canvas" width="340" height="340"></canvas>
+                    <button id="spin-btn" class="btn btn-gold btn-spin-center">
+                        SPIN <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SECTION 4: VIDEO TASKS -->
+            <section id="video-tasks" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-play text-red"></i> ভিডিও ওয়াচ ও আয়</h2>
+                    <p>ভিডিও প্লে করুন এবং নির্ধারিত সময় পর্যন্ত দেখুন।</p>
+                </div>
+
+                <div class="video-grid" id="video-container">
+                    <!-- Dynamic Videos generated by JS -->
+                </div>
+            </section>
+
+            <!-- SECTION 5: MATH QUIZ -->
+            <section id="math-quiz" class="tab-page">
+                <div class="page-header text-center">
+                    <h2><i class="fa-solid fa-calculator text-green"></i> সহজ ম্যাথ কুইজ</h2>
+                    <p>সহজ গাণিতিক প্রশ্নের উত্তর দিয়ে টাকা আয় করুন</p>
+                </div>
+
+                <div class="quiz-card">
+                    <div class="quiz-question-box">
+                        <span id="quiz-num1">0</span> + <span id="quiz-num2">0</span> = ?
+                    </div>
+                    <div class="quiz-input-group">
+                        <input type="number" id="quiz-answer-input" placeholder="আপনার উত্তর লিখুন..." autocomplete="off">
+                        <button id="quiz-submit-btn" class="btn btn-primary">
+                            <i class="fa-solid fa-paper-plane"></i> সাবমিট
+                        </button>
+                    </div>
+                    <div class="quiz-reward-info">
+                        <i class="fa-solid fa-coins text-gold"></i> প্রতিটি সঠিক উত্তরের জন্য পাবেন: <strong>৳০.৫০ টাকা</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: REFER & EARN -->
+            <section id="refer-earn" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-users text-blue"></i> রেফার ও আয় (Referral)</h2>
+                    <p>বন্ধুদের ইনভাইট করুন এবং তাদের মোট আয়ের ১০% আজীবন কমিশন উপভোগ করুন!</p>
+                </div>
+
+                <div class="referral-box">
+                    <div class="ref-link-card">
+                        <label>আপনার ইউনিক রেফারেল লিংক:</label>
+                        <div class="copy-input-group">
+                            <input type="text" id="referral-link" readonly value="https://bdclick24.com/?ref=USER1234">
+                            <button id="copy-ref-btn" class="btn btn-secondary"><i class="fa-solid fa-copy"></i> কপি</button>
+                        </div>
+                    </div>
+
+                    <div class="ref-stats-grid">
+                        <div class="ref-stat-card">
+                            <i class="fa-solid fa-user-plus text-cyan"></i>
+                            <h4 id="total-referrals-count">0</h4>
+                            <p>মোট রেফারেল</p>
+                        </div>
+                        <div class="ref-stat-card">
+                            <i class="fa-solid fa-hand-holding-dollar text-green"></i>
+                            <h4>৳<span id="referral-earnings-count">0.00</span></h4>
+                            <p>রেফারেল ইনকাম</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 7: WITHDRAW -->
+            <section id="withdraw" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-money-bill-transfer text-emerald"></i> টাকা তুলুন (Withdraw Balance)</h2>
+                    <p>আপনার অর্জিত টাকা বিকাশ, নগদ বা রকেটে নিমেষেই পেমেন্ট নিন।</p>
+                </div>
+
+                <div class="withdraw-card">
+                    <div class="balance-summary-banner">
+                        <span>আপনার বর্তমান ব্যালেন্স:</span>
+                        <strong>৳<span id="withdraw-current-balance">0.00</span></strong>
+                    </div>
+
+                    <form id="withdraw-form" onsubmit="handleWithdrawSubmit(event)">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-wallet"></i> পেমেন্ট মেথড সিলেক্ট করুন:</label>
+                            <div class="method-selector">
+                                <label class="method-option">
+                                    <input type="radio" name="payment_method" value="Bkash" checked>
+                                    <span class="method-btn bkash"><i class="fa-solid fa-mobile-screen-button"></i> বিকাশ (Bkash)</span>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="payment_method" value="Nagad">
+                                    <span class="method-btn nagad"><i class="fa-solid fa-mobile-screen-button"></i> নগদ (Nagad)</span>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="payment_method" value="Rocket">
+                                    <span class="method-btn rocket"><i class="fa-solid fa-mobile-screen-button"></i> রকেট (Rocket)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-phone"></i> মোবাইল নাম্বার (Bkash/Nagad/Rocket):</label>
+                            <input type="text" id="withdraw-phone" placeholder="017XXXXXXXX" required pattern="01[3-9][0-9]{8}">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-bangladeshi-taka-sign"></i> টাকার পরিমাণ (সর্বনিম্ন ৳৫০):</label>
+                            <input type="number" id="withdraw-amount" placeholder="50" min="50" step="10" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-glow">
+                            <i class="fa-solid fa-paper-plane"></i> পেমেন্ট রিকোয়েস্ট পাঠান
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECTION 8: HISTORY -->
+            <section id="history" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-receipt text-gold"></i> পেমেন্ট ও উইথড্র হিস্ট্রি</h2>
+                    <p>আপনার সমস্ত প্রত্যাহার রিকোয়েস্টের স্টেটাস ট্র্যাক করুন</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>মেথড</th>
+                                <th>নাম্বার</th>
+                                <th>পরিমাণ</th>
+                                <th>স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-history-tbody">
+                            <!-- Dynamic history -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 9: ADMIN PANEL -->
+            <section id="admin-panel" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-user-gear text-red"></i> অ্যাডমিন কন্ট্রোল প্যানেল</h2>
+                    <p>পেমেন্ট রিকোয়েস্ট অনুমোদন করুন ও সিস্টেম স্ট্যাটাস দেখুন</p>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="stat-box">
+                        <i class="fa-solid fa-clock text-gold"></i>
+                        <div class="stat-number" id="admin-pending-count">0</div>
+                        <div class="stat-label">পেন্ডিং পেমেন্ট</div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fa-solid fa-circle-check text-green"></i>
+                        <div class="stat-number" id="admin-paid-count">0</div>
+                        <div class="stat-label">অনুমোদিত পেমেন্ট</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title"><i class="fa-solid fa-list-check"></i> ব্যবহারকারীদের পেমেন্ট রিকোয়েস্ট</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>আইডি</th>
+                                <th>ব্যবহারকারী</th>
+                                <th>মেথড</th>
+                                <th>নাম্বার</th>
+                                <th>পরিমাণ</th>
+                                <th>একশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-withdraw-tbody">
+                            <!-- Dynamic admin items -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (Mobile View) -->
+    <nav class="bottom-nav">
+        <a href="#dashboard" class="bottom-item active" data-target="dashboard">
+            <i class="fa-solid fa-house"></i>
+            <span>হোম</span>
+        </a>
+        <a href="#ptc-ads" class="bottom-item" data-target="ptc-ads">
+            <i class="fa-solid fa-arrow-pointer"></i>
+            <span>এডস</span>
+        </a>
+        <a href="#spin-wheel" class="bottom-item" data-target="spin-wheel">
+            <i class="fa-solid fa-dharmachakra"></i>
+            <span>স্পিন</span>
+        </a>
+        <a href="#withdraw" class="bottom-item" data-target="withdraw">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+            <span>উইথড্র</span>
+        </a>
+        <a href="#refer-earn" class="bottom-item" data-target="refer-earn">
+            <i class="fa-solid fa-users"></i>
+            <span>রেফার</span>
+        </a>
+    </nav>
+
+    <!-- PTC Ad Viewer Modal -->
+    <div id="ad-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-eye text-cyan"></i> বিজ্ঞাপন দেখা হচ্ছে...</h3>
+                <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> <span id="ad-timer">15</span>s</div>
+            </div>
+
+            <div class="modal-body">
+                <div class="ad-preview-box">
+                    <iframe id="ad-iframe" src="about:blank" title="Ad preview"></iframe>
+                    <div class="ad-overlay-sim" id="ad-sim-content">
+                        <div class="sim-brand"><i class="fa-solid fa-bullhorn"></i> স্পন্সরড বিজ্ঞাপন</div>
+                        <h2 id="ad-modal-title">বিশেষ অফার দেখুন!</h2>
+                        <p id="ad-modal-desc">এখানে বিজ্ঞাপনদাতার ওয়েবসাইট প্রদর্শিত হচ্ছে...</p>
+                        <div class="sim-loading-bar"><div class="sim-progress" id="ad-progress"></div></div>
+                    </div>
+                </div>
+
+                <!-- Math Verification Box (shows when timer finishes) -->
+                <div id="ad-quiz-box" class="ad-quiz-box" style="display: none;">
+                    <h4><i class="fa-solid fa-shield-halved text-gold"></i> ভেরিফিকেশন কুইজ পুরন করুন:</h4>
+                    <p>নিচের সহজ অঙ্কের সঠিক উত্তর দিন:</p>
+                    <div class="ad-quiz-input">
+                        <span id="ad-math-q">3 + 4 =</span>
+                        <input type="number" id="ad-math-a" placeholder="উত্তর">
+                        <button id="ad-claim-btn" class="btn btn-green"><i class="fa-solid fa-circle-check"></i> রিওয়ার্ড সংগ্রহ করুন</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user"></i> প্রোফাইল সেটিংস</h3>
+                <button class="btn-close" onclick="closeModal('profile-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form" onsubmit="saveUserProfile(event)">
+                    <div class="form-group">
+                        <label>আপনার নাম:</label>
+                        <input type="text" id="profile-name-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>মোবাইল নাম্বার:</label>
+                        <input type="text" id="profile-phone-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">সংরক্ষণ করুন</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
