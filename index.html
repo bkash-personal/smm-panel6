@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Click 24 Pro - আর্নিং ও বেটিং প্ল্যাটফর্ম</title>
+    <meta name="description" content="বাংলাদেশি বিশ্বস্ত পিটিসি, বেটিং ও টাস্ক আর্নিং প্ল্যাটফর্ম। খেলা প্রেডিকশন, স্পিন ও এড দেখে বিকাশ, নগদ ও রকেটে টাকা ইনকাম করুন।">
+    
+    <!-- Google Fonts: Hind Siliguri (Bangla) & Outfit (English) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-dice text-gradient"></i>
+                <span class="logo-text">BD Click<span class="highlight">24</span></span>
+                <span class="badge-bet">BET & EARN</span>
+            </div>
+            
+            <div class="nav-right">
+                <!-- Balance Chip -->
+                <div class="balance-chip" id="nav-balance-btn" onclick="switchTab('withdraw')">
+                    <i class="fa-solid fa-wallet text-gold"></i>
+                    <span class="balance-text">৳<span id="user-balance">0.00</span></span>
+                </div>
+                
+                <!-- Admin Toggle -->
+                <button class="btn-icon" id="admin-toggle-btn" title="অ্যাডমিন প্যানেল">
+                    <i class="fa-solid fa-user-shield"></i>
+                </button>
+
+                <!-- Profile Menu -->
+                <button class="btn-icon" id="user-profile-btn" title="প্রোফাইল">
+                    <i class="fa-solid fa-circle-user"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-layout">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="sidebar">
+            <div class="user-card">
+                <div class="avatar" id="sidebar-avatar">U</div>
+                <div class="user-info">
+                    <h3 id="sidebar-username">ব্যবহারকারী</h3>
+                    <p class="user-phone" id="sidebar-phone">017XXXXXXXX</p>
+                    <div class="user-level"><i class="fa-solid fa-award text-gold"></i> VIP Level 1</div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-link active" data-target="dashboard">
+                    <i class="fa-solid fa-house"></i> ড্যাশবোর্ড
+                </a>
+                <a href="#sports-betting" class="nav-link highlight-link" data-target="sports-betting">
+                    <i class="fa-solid fa-trophy text-gold"></i> খেলা বেটিং (Sports Bet)
+                </a>
+                <a href="#casino-games" class="nav-link" data-target="casino-games">
+                    <i class="fa-solid fa-gamepad text-cyan"></i> ইন্সট্যান্ট গেমস (Games)
+                </a>
+                <a href="#my-bets" class="nav-link" data-target="my-bets">
+                    <i class="fa-solid fa-receipt text-green"></i> আমার বেট হিস্ট্রি
+                </a>
+                <a href="#ptc-ads" class="nav-link" data-target="ptc-ads">
+                    <i class="fa-solid fa-arrow-pointer"></i> এড ভিউ (PTC)
+                </a>
+                <a href="#spin-wheel" class="nav-link" data-target="spin-wheel">
+                    <i class="fa-solid fa-dharmachakra"></i> লাকি স্পিন
+                </a>
+                <a href="#refer-earn" class="nav-link" data-target="refer-earn">
+                    <i class="fa-solid fa-users"></i> রেফার ও আয়
+                </a>
+                <a href="#withdraw" class="nav-link" data-target="withdraw">
+                    <i class="fa-solid fa-money-bill-transfer"></i> টাকা তুলুন (Withdraw)
+                </a>
+                <a href="#admin-panel" class="nav-link admin-only-link" data-target="admin-panel" style="display: none;">
+                    <i class="fa-solid fa-user-gear text-red"></i> অ্যাডমিন কন্ট্রোল
+                </a>
+            </nav>
+            
+            <div class="sidebar-notice">
+                <i class="fa-solid fa-shield-halved"></i>
+                <p>নিরাপদ ও বিশ্বস্ত বেটিং প্ল্যাটফর্ম। তাৎক্ষণিক বেট প্লেসমেন্ট ও পেমেন্ট!</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="content-body">
+
+            <!-- Global Ticker Notice -->
+            <div class="notice-bar">
+                <div class="notice-badge"><i class="fa-solid fa-bullhorn"></i> নোটিশ:</div>
+                <marquee class="notice-text" scrollamount="5">
+                    লাইভ ক্রিকেট ও ফুটবল ম্যাচে প্রেডিকশন করুন এবং ২x থেকে ৫x পর্যন্ত টাকা জিতুন! সর্বনিম্ন ৫০ টাকা বিকাশ, নগদ বা রকেটে ডিপোজিট ও উইথড্র দেওয়া যায়।
+                </marquee>
+            </div>
+
+            <!-- SECTION 1: DASHBOARD -->
+            <section id="dashboard" class="tab-page active">
+                <!-- Banner Slider / Hero -->
+                <div class="hero-card hero-betting">
+                    <div class="hero-text">
+                        <span class="live-tag"><i class="fa-solid fa-circle text-red blinking"></i> LIVE BETTING LIVE NOW</span>
+                        <h2>ক্রিকেট ও ফুটবল ম্যাচে প্রেডিকশন করে <span class="highlight">১০ গুণ পর্যন্ত</span> জিতুন!</h2>
+                        <p>বাংলাদেশ বনাম ইন্ডিয়া টি২০ ম্যাচে আজই আপনার পছন্দমতো বেট প্লেস করুন।</p>
+                        <div class="hero-btn-group">
+                            <button class="btn btn-gold btn-glow" onclick="switchTab('sports-betting')">
+                                <i class="fa-solid fa-trophy"></i> স্পোর্টস বেটিং
+                            </button>
+                            <button class="btn btn-secondary" onclick="switchTab('casino-games')">
+                                <i class="fa-solid fa-dice"></i> হেড-টেইল গেম
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <i class="fa-solid fa-wallet text-gold"></i>
+                            <div class="stat-number">৳<span id="dash-balance">0.00</span></div>
+                            <div class="stat-label">বর্তমান ব্যালেন্স</div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fa-solid fa-trophy text-cyan"></i>
+                            <div class="stat-number" id="dash-total-bets">0</div>
+                            <div class="stat-label">মোট বেট</div>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fa-solid fa-sack-dollar text-green"></i>
+                            <div class="stat-number">৳<span id="dash-total-win">0.00</span></div>
+                            <div class="stat-label">মোট জয়</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Check-In Bonus Banner -->
+                <div class="daily-bonus-card">
+                    <div class="bonus-info">
+                        <div class="bonus-icon"><i class="fa-solid fa-gift"></i></div>
+                        <div>
+                            <h3>দৈনিক ফ্রি বেটিং বোনাস (Daily Bonus)</h3>
+                            <p>প্রতিদিন ফ্রিতে ৳১০.০০ বেটিং ফান্ড ক্লেইম করুন!</p>
+                        </div>
+                    </div>
+                    <button id="claim-daily-btn" class="btn btn-gold">
+                        <i class="fa-solid fa-hand-holding-dollar"></i> বোনাস নিন (৳১০)
+                    </button>
+                </div>
+
+                <!-- Quick Category Selector -->
+                <h3 class="section-title"><i class="fa-solid fa-fire text-red"></i> ট্রেন্ডিং গেমস ও বেটিং</h3>
+                <div class="feature-grid">
+                    <div class="feature-card bet-card-style" onclick="switchTab('sports-betting')">
+                        <div class="feature-icon bg-purple"><i class="fa-solid fa-baseball-bat-ball"></i></div>
+                        <h4>ক্রিকেট প্রেডিকশন</h4>
+                        <p>টি২০ ও ওয়ানডে ম্যাচের প্রতি ওভারে বেট করুন</p>
+                        <span class="badge badge-live">১০টি ম্যাচ লাইভ</span>
+                    </div>
+
+                    <div class="feature-card bet-card-style" onclick="switchTab('sports-betting')">
+                        <div class="feature-icon bg-orange"><i class="fa-solid fa-football"></i></div>
+                        <h4>ফুটবল ম্যাচ বেট</h4>
+                        <p>চ্যাম্পিয়ন্স লিগ ও প্রিমিয়ার লিগ ম্যাচ</p>
+                        <span class="badge badge-live">৮টি ম্যাচ</span>
+                    </div>
+
+                    <div class="feature-card bet-card-style" onclick="switchTab('casino-games')">
+                        <div class="feature-icon bg-red"><i class="fa-solid fa-coins"></i></div>
+                        <h4>হেড & টেইল (Coin Flip)</h4>
+                        <p>হেড বা টেইল বেছে নিয়ে ২ গুণ টাকা জিতুন</p>
+                        <span class="badge">১.৯৫x পে-আউট</span>
+                    </div>
+
+                    <div class="feature-card bet-card-style" onclick="switchTab('casino-games')">
+                        <div class="feature-icon bg-green"><i class="fa-solid fa-palette"></i></div>
+                        <h4>কালার প্রেডিকশন</h4>
+                        <p>লাল, সবুজ বা বেগুনী রং প্রেডিক্ট করুন</p>
+                        <span class="badge">৪.৫x পর্যন্ত লাভ</span>
+                    </div>
+
+                    <div class="feature-card bet-card-style" onclick="switchTab('casino-games')">
+                        <div class="feature-icon bg-blue"><i class="fa-solid fa-dice-five"></i></div>
+                        <h4>ডাইস রোল</h4>
+                        <p>ছক্কা গড়িয়ে ৩x টাকা জিতুন</p>
+                        <span class="badge">ইন্সট্যান্ট উইন</span>
+                    </div>
+
+                    <div class="feature-card bet-card-style" onclick="switchTab('ptc-ads')">
+                        <div class="feature-icon bg-emerald"><i class="fa-solid fa-arrow-pointer"></i></div>
+                        <h4>ফ্রি এডস আর্নিং</h4>
+                        <p>বিনামূল্যে এড দেখে ডিপোজিট ব্যালেন্স বাড়ান</p>
+                        <span class="badge">ফ্রি ইনকাম</span>
+                    </div>
+                </div>
+
+                <!-- Live Big Winners Feed -->
+                <h3 class="section-title"><i class="fa-solid fa-award text-gold"></i> লাইভ বেটিং জয়ীদের তালিকা</h3>
+                <div class="recent-payouts-box">
+                    <div class="payout-row">
+                        <span class="payout-user"><i class="fa-solid fa-user-ninja"></i> Sakib_77</span>
+                        <span class="payout-method bkash-badge">BD vs IND</span>
+                        <span class="payout-amount">৳১,৫০০.০০ জিতলেন (2.1x)</span>
+                        <span class="payout-status text-green"><i class="fa-solid fa-trophy"></i> উইন</span>
+                    </div>
+                    <div class="payout-row">
+                        <span class="payout-user"><i class="fa-solid fa-user-ninja"></i> Tanvir_King</span>
+                        <span class="payout-method nagad-badge">Coin Flip</span>
+                        <span class="payout-amount">৳৮০০.০০ জিতলেন (1.95x)</span>
+                        <span class="payout-status text-green"><i class="fa-solid fa-trophy"></i> উইন</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: SPORTS BETTING -->
+            <section id="sports-betting" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-trophy text-gold"></i> লাইভ স্পোর্টস বেটিং (Sports Betting)</h2>
+                    <p>আপনার প্রিয় টিমের ওপর বেট প্লেস করুন এবং সঠিক প্রেডিকশনে জিতুন মোটা অংকের টাকা!</p>
+                </div>
+
+                <div class="sports-tabs">
+                    <button class="sport-tab-btn active" data-sport="all"><i class="fa-solid fa-globe"></i> সব খেলা</button>
+                    <button class="sport-tab-btn" data-sport="cricket"><i class="fa-solid fa-baseball-bat-ball"></i> ক্রিকেট</button>
+                    <button class="sport-tab-btn" data-sport="football"><i class="fa-solid fa-football"></i> ফুটবল</button>
+                </div>
+
+                <div class="matches-list" id="matches-container">
+                    <!-- Dynamic Matches Cards Generated by JS -->
+                </div>
+            </section>
+
+            <!-- SECTION 3: INSTANT CASINO & PREDICTION GAMES -->
+            <section id="casino-games" class="tab-page">
+                <div class="page-header text-center">
+                    <h2><i class="fa-solid fa-gamepad text-cyan"></i> ইন্সট্যান্ট গেমস (Head/Tail & Dice)</h2>
+                    <p>মুহূর্তেই ফলাফল এবং লাইভ উইনিং পে-আউট!</p>
+                </div>
+
+                <div class="games-sub-tabs">
+                    <button class="game-btn active" onclick="showMiniGame('coin-flip')"><i class="fa-solid fa-coins"></i> হেড & টেইল</button>
+                    <button class="game-btn" onclick="showMiniGame('dice-roll')"><i class="fa-solid fa-dice"></i> ডাইস রোল</button>
+                    <button class="game-btn" onclick="showMiniGame('color-pred')"><i class="fa-solid fa-palette"></i> কালার প্রেডিকশন</button>
+                </div>
+
+                <!-- GAME 1: COIN FLIP -->
+                <div id="game-coin-flip" class="mini-game-card">
+                    <h3><i class="fa-solid fa-coins text-gold"></i> হেড & টেইল ফ্লিপ (1.95x Payout)</h3>
+                    <p>আপনার পছন্দের সাইড নির্বাচন করুন এবং বেটের পরিমাণ বসান</p>
+
+                    <div class="coin-stage">
+                        <div class="coin" id="coin-element">
+                            <div class="coin-front">HEAD</div>
+                            <div class="coin-back">TAIL</div>
+                        </div>
+                    </div>
+
+                    <div class="side-selector">
+                        <label class="side-btn">
+                            <input type="radio" name="coin_side" value="HEAD" checked>
+                            <span class="btn-side"><i class="fa-solid fa-user-tie"></i> HEAD (১.৯৫x)</span>
+                        </label>
+                        <label class="side-btn">
+                            <input type="radio" name="coin_side" value="TAIL" >
+                            <span class="btn-side"><i class="fa-solid fa-crown"></i> TAIL (১.৯৫x)</span>
+                        </label>
+                    </div>
+
+                    <div class="bet-input-box">
+                        <label>বেটের পরিমাণ (৳):</label>
+                        <div class="quick-amounts">
+                            <button type="button" onclick="setCoinBetAmount(20)">৳২০</button>
+                            <button type="button" onclick="setCoinBetAmount(50)">৳৫০</button>
+                            <button type="button" onclick="setCoinBetAmount(100)">৳১০০</button>
+                            <button type="button" onclick="setCoinBetAmount(500)">৳৫০০</button>
+                        </div>
+                        <input type="number" id="coin-bet-amount" value="50" min="10">
+                    </div>
+
+                    <button id="flip-coin-btn" class="btn btn-gold btn-block btn-glow margin-top">
+                        <i class="fa-solid fa-rotate"></i> কয়েন ফ্লিপ করুন!
+                    </button>
+                </div>
+
+                <!-- GAME 2: DICE ROLL -->
+                <div id="game-dice-roll" class="mini-game-card" style="display: none;">
+                    <h3><i class="fa-solid fa-dice text-red"></i> ৩D ডাইস রোল (Up to 5.5x)</h3>
+                    <p>ডাইসের ছক্কার সংখ্যা প্রেডিক্ট করুন</p>
+
+                    <div class="dice-stage">
+                        <div class="dice-box" id="dice-element">?</div>
+                    </div>
+
+                    <div class="side-selector">
+                        <label class="side-btn">
+                            <input type="radio" name="dice_opt" value="UNDER" checked>
+                            <span class="btn-side">১-৩ (২.০০x)</span>
+                        </label>
+                        <label class="side-btn">
+                            <input type="radio" name="dice_opt" value="OVER">
+                            <span class="btn-side">৪-৬ (২.০০x)</span>
+                        </label>
+                        <label class="side-btn">
+                            <input type="radio" name="dice_opt" value="SIX">
+                            <span class="btn-side">ছক্কা (৬) (৫.৫০x)</span>
+                        </label>
+                    </div>
+
+                    <div class="bet-input-box">
+                        <label>বেটের পরিমাণ (৳):</label>
+                        <input type="number" id="dice-bet-amount" value="50" min="10">
+                    </div>
+
+                    <button id="roll-dice-btn" class="btn btn-primary btn-block btn-glow margin-top">
+                        <i class="fa-solid fa-dice"></i> ডাইস গড়িয়ে দিন!
+                    </button>
+                </div>
+
+                <!-- GAME 3: COLOR PREDICTION -->
+                <div id="game-color-pred" class="mini-game-card" style="display: none;">
+                    <h3><i class="fa-solid fa-palette text-purple"></i> কালার প্রেডিকশন (Color Game)</h3>
+                    <p>পরবর্তী রঙের ওপর বেট ধরে বড় পুরষ্কার জিতুন</p>
+
+                    <div class="color-options">
+                        <button class="color-btn bg-red" onclick="placeColorBet('RED', 2.0)">লাল (2.0x)</button>
+                        <button class="color-btn bg-green" onclick="placeColorBet('GREEN', 2.0)">সবুজ (2.0x)</button>
+                        <button class="color-btn bg-purple" onclick="placeColorBet('VIOLET', 4.5)">বেগুনী (4.5x)</button>
+                    </div>
+
+                    <div class="color-history-box" id="color-history">
+                        <!-- Color history dots -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: MY BETS HISTORY -->
+            <section id="my-bets" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-receipt text-green"></i> আমার বেটিং হিস্ট্রি (My Bets)</h2>
+                    <p>আপনার সমস্ত লাইভ ও সম্পন্ন হওয়া বেটের হিস্ট্রি</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>আইডি</th>
+                                <th>ম্যাচ / গেম</th>
+                                <th>প্রেডিকশন</th>
+                                <th>বেট (৳)</th>
+                                <th>সম্ভাব্য উইন (৳)</th>
+                                <th>স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-bets-tbody">
+                            <!-- Dynamic User Bets -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 5: PTC ADS -->
+            <section id="ptc-ads" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-arrow-pointer text-cyan"></i> পিটিসি এড ভিউ (Free Earn)</h2>
+                    <p>বিনামূল্যে এড দেখে বেটিং করার ফান্ড বা বিকাশ উইথড্র ব্যালেন্স বাড়ান</p>
+                </div>
+                <div class="ads-grid" id="ads-container"></div>
+            </section>
+
+            <!-- SECTION 6: SPIN WHEEL -->
+            <section id="spin-wheel" class="tab-page">
+                <div class="page-header text-center">
+                    <h2><i class="fa-solid fa-dharmachakra text-gold"></i> লাকি স্পিন হুইল</h2>
+                    <p>চাকা ঘুরিয়ে ফ্রি রিওয়ার্ড জিতুন! আপনার দৈনিক বাকি স্পিন: <strong id="spins-left-count">10</strong>টি</p>
+                </div>
+
+                <div class="spin-wrapper">
+                    <div class="wheel-pointer"></div>
+                    <canvas id="wheel-canvas" width="340" height="340"></canvas>
+                    <button id="spin-btn" class="btn btn-gold btn-spin-center">
+                        SPIN <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SECTION 7: REFER & EARN -->
+            <section id="refer-earn" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-users text-blue"></i> রেফার ও ১০% কমিশন</h2>
+                    <p>বন্ধুদের আপনার লিংকে যুক্ত করুন এবং তাদের প্রতিটি বেটিং ও টাস্কের ১০% কমিশন পান!</p>
+                </div>
+
+                <div class="referral-box">
+                    <div class="ref-link-card">
+                        <label>আপনার ইউনিক রেফারেল লিংক:</label>
+                        <div class="copy-input-group">
+                            <input type="text" id="referral-link" readonly value="https://bdclick24.com/?ref=USER1234">
+                            <button id="copy-ref-btn" class="btn btn-secondary"><i class="fa-solid fa-copy"></i> কপি</button>
+                        </div>
+                    </div>
+
+                    <div class="ref-stats-grid">
+                        <div class="ref-stat-card">
+                            <i class="fa-solid fa-user-plus text-cyan"></i>
+                            <h4 id="total-referrals-count">0</h4>
+                            <p>মোট রেফারেল</p>
+                        </div>
+                        <div class="ref-stat-card">
+                            <i class="fa-solid fa-hand-holding-dollar text-green"></i>
+                            <h4>৳<span id="referral-earnings-count">0.00</span></h4>
+                            <p>রেফারেল ইনকাম</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 8: WITHDRAW -->
+            <section id="withdraw" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-money-bill-transfer text-emerald"></i> টাকা তুলুন (Withdraw Balance)</h2>
+                    <p>আপনার অর্জিত টাকা বিকাশ, নগদ বা রকেটে পেমেন্ট নিন।</p>
+                </div>
+
+                <div class="withdraw-card">
+                    <div class="balance-summary-banner">
+                        <span>আপনার বর্তমান ব্যালেন্স:</span>
+                        <strong>৳<span id="withdraw-current-balance">0.00</span></strong>
+                    </div>
+
+                    <form id="withdraw-form" onsubmit="handleWithdrawSubmit(event)">
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-wallet"></i> পেমেন্ট মেথড সিলেক্ট করুন:</label>
+                            <div class="method-selector">
+                                <label class="method-option">
+                                    <input type="radio" name="payment_method" value="Bkash" checked>
+                                    <span class="method-btn bkash"><i class="fa-solid fa-mobile-screen-button"></i> বিকাশ (Bkash)</span>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="payment_method" value="Nagad">
+                                    <span class="method-btn nagad"><i class="fa-solid fa-mobile-screen-button"></i> নগদ (Nagad)</span>
+                                </label>
+                                <label class="method-option">
+                                    <input type="radio" name="payment_method" value="Rocket">
+                                    <span class="method-btn rocket"><i class="fa-solid fa-mobile-screen-button"></i> রকেট (Rocket)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-phone"></i> মোবাইল নাম্বার (Bkash/Nagad/Rocket):</label>
+                            <input type="text" id="withdraw-phone" placeholder="017XXXXXXXX" required pattern="01[3-9][0-9]{8}">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-bangladeshi-taka-sign"></i> টাকার পরিমাণ (সর্বনিম্ন ৳৫০):</label>
+                            <input type="number" id="withdraw-amount" placeholder="50" min="50" step="10" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-glow">
+                            <i class="fa-solid fa-paper-plane"></i> পেমেন্ট রিকোয়েস্ট পাঠান
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECTION 9: ADMIN PANEL -->
+            <section id="admin-panel" class="tab-page">
+                <div class="page-header">
+                    <h2><i class="fa-solid fa-user-gear text-red"></i> অ্যাডমিন কন্ট্রোল ও বেট সেটেলমেন্ট</h2>
+                    <p>ম্যাচের রেজাল্ট ডিক্লেয়ার করুন এবং পেমেন্ট রিকোয়েস্ট নিয়ন্ত্রণ করুন</p>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="stat-box">
+                        <i class="fa-solid fa-clock text-gold"></i>
+                        <div class="stat-number" id="admin-pending-count">0</div>
+                        <div class="stat-label">পেন্ডিং পেমেন্ট</div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fa-solid fa-circle-check text-green"></i>
+                        <div class="stat-number" id="admin-paid-count">0</div>
+                        <div class="stat-label">অনুমোদিত পেমেন্ট</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title"><i class="fa-solid fa-trophy text-gold"></i> লাইভ বেটিং কন্ট্রোল ও উইনার নির্বাচন</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ম্যাচ</th>
+                                <th>অপশনসমূহ</th>
+                                <th>অ্যাকশন (বিজয়ী ঘোষণা)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-matches-tbody">
+                            <!-- Dynamic admin match controls -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="section-title margin-top"><i class="fa-solid fa-list-check"></i> ব্যবহারকারীদের পেমেন্ট রিকোয়েস্ট</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>আইডি</th>
+                                <th>ব্যবহারকারী</th>
+                                <th>মেথড</th>
+                                <th>নাম্বার</th>
+                                <th>পরিমাণ</th>
+                                <th>একশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-withdraw-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (Mobile View) -->
+    <nav class="bottom-nav">
+        <a href="#dashboard" class="bottom-item active" data-target="dashboard">
+            <i class="fa-solid fa-house"></i>
+            <span>হোম</span>
+        </a>
+        <a href="#sports-betting" class="bottom-item" data-target="sports-betting">
+            <i class="fa-solid fa-trophy"></i>
+            <span>বেটিং</span>
+        </a>
+        <a href="#casino-games" class="bottom-item" data-target="casino-games">
+            <i class="fa-solid fa-gamepad"></i>
+            <span>গেমস</span>
+        </a>
+        <a href="#withdraw" class="bottom-item" data-target="withdraw">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+            <span>উইথড্র</span>
+        </a>
+        <a href="#my-bets" class="bottom-item" data-target="my-bets">
+            <i class="fa-solid fa-receipt"></i>
+            <span>মাই বেটস</span>
+        </a>
+    </nav>
+
+    <!-- BET SLIP MODAL -->
+    <div id="bet-modal" class="modal-overlay">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-ticket text-gold"></i> বেট প্লেস করুন (Bet Slip)</h3>
+                <button class="btn-close" onclick="closeModal('bet-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="betslip-match-info">
+                    <span id="betslip-match-title">Bangladesh vs India</span>
+                    <div class="betslip-choice">
+                        <span>আপনার চয়েস: <strong id="betslip-option-name" class="highlight">Bangladesh</strong></span>
+                        <span class="odds-badge" id="betslip-odds">1.85x</span>
+                    </div>
+                </div>
+
+                <div class="form-group margin-top">
+                    <label>বেটের পরিমাণ (৳):</label>
+                    <input type="number" id="betslip-stake-input" value="100" min="20" oninput="calculateBetslipPayout()">
+                </div>
+
+                <div class="betslip-payout-box">
+                    <span>সম্ভাব্য জয়:</span>
+                    <strong class="text-green">৳<span id="betslip-return-amount">185.00</span></strong>
+                </div>
+
+                <button class="btn btn-gold btn-block btn-glow margin-top" onclick="confirmSportsBet()">
+                    <i class="fa-solid fa-check-circle"></i> নিশ্চিত বেট দিন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PTC Ad Viewer Modal -->
+    <div id="ad-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-eye text-cyan"></i> বিজ্ঞাপন দেখা হচ্ছে...</h3>
+                <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> <span id="ad-timer">15</span>s</div>
+            </div>
+
+            <div class="modal-body">
+                <div class="ad-preview-box">
+                    <div class="ad-overlay-sim">
+                        <div class="sim-brand"><i class="fa-solid fa-bullhorn"></i> স্পন্সরড বিজ্ঞাপন</div>
+                        <h2 id="ad-modal-title">বিশেষ অফার দেখুন!</h2>
+                        <div class="sim-loading-bar"><div class="sim-progress" id="ad-progress"></div></div>
+                    </div>
+                </div>
+
+                <div id="ad-quiz-box" class="ad-quiz-box" style="display: none;">
+                    <h4><i class="fa-solid fa-shield-halved text-gold"></i> কুইজ পুরন করুন:</h4>
+                    <div class="ad-quiz-input">
+                        <span id="ad-math-q">3 + 4 =</span>
+                        <input type="number" id="ad-math-a" placeholder="উত্তর">
+                        <button id="ad-claim-btn" class="btn btn-green">সংগ্রহ করুন</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user"></i> প্রোফাইল সেটিংস</h3>
+                <button class="btn-close" onclick="closeModal('profile-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form" onsubmit="saveUserProfile(event)">
+                    <div class="form-group">
+                        <label>আপনার নাম:</label>
+                        <input type="text" id="profile-name-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>মোবাইল নাম্বার:</label>
+                        <input type="text" id="profile-phone-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">সংরক্ষণ করুন</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
