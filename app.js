@@ -1,35 +1,75 @@
 /* ==========================================================================
-   BD CLICK 24 PRO - INTERACTIVE JAVASCRIPT LOGIC
+   BD CLICK 24 PRO - BETTING & EARNING INTERACTIVE JS ENGINE
    ========================================================================== */
 
-// --- STATE MANAGEMENT & INITIALIZATION ---
 const INITIAL_STATE = {
     user: {
         name: "আরিফুল ইসলাম",
         phone: "01712345678",
-        balance: 15.50,
-        totalEarned: 15.50,
+        balance: 100.00,
+        totalEarned: 100.00,
+        totalBets: 3,
+        totalWin: 185.00,
         tasksCompleted: 4,
         referralCode: "BD24" + Math.floor(1000 + Math.random() * 9000),
         referrals: 2,
-        referralEarnings: 3.50,
+        referralEarnings: 12.50,
         lastDailyClaim: null,
         spinsLeft: 10
     },
+    sportsMatches: [
+        {
+            id: "M101",
+            category: "cricket",
+            tournament: "T20 World Cup Warmup 2026",
+            status: "LIVE 🔴 14.2 Ov",
+            team1: { name: "Bangladesh", flag: "🇧🇩", odds: 1.85 },
+            team2: { name: "India", flag: "🇮🇳", odds: 1.95 },
+            drawOdds: 4.50,
+            settled: false,
+            winner: null
+        },
+        {
+            id: "M102",
+            category: "football",
+            tournament: "UEFA Champions League",
+            status: "Tonight 9:00 PM",
+            team1: { name: "Real Madrid", flag: "🇪🇸", odds: 1.70 },
+            team2: { name: "Barcelona", flag: "🇪🇸", odds: 2.10 },
+            drawOdds: 3.20,
+            settled: false,
+            winner: null
+        },
+        {
+            id: "M103",
+            category: "cricket",
+            tournament: "IPL 2026 Season Match",
+            status: "Tomorrow 7:30 PM",
+            team1: { name: "KKR", flag: "🏏", odds: 1.90 },
+            team2: { name: "CSK", flag: "🏏", odds: 1.90 },
+            drawOdds: 5.00,
+            settled: false,
+            winner: null
+        }
+    ],
+    userBets: [
+        {
+            id: "BET901",
+            matchTitle: "Bangladesh vs India",
+            choice: "Bangladesh",
+            stake: 100.00,
+            odds: 1.85,
+            potentialReturn: 185.00,
+            status: "Won",
+            matchId: "M101"
+        }
+    ],
     ptcAds: [
         { id: 1, title: "৫০% ছাড়ের অফার দেখুন - Daraz Deals", reward: 1.50, timer: 15, url: "https://example.com/ad1", completed: false },
-        { id: 2, title: "BD Internet Package 10GB Offer", reward: 1.00, timer: 10, url: "https://example.com/ad2", completed: false },
-        { id: 3, title: "অনলাইন ফ্রিল্যান্সিং কোর্স ভর্তি চলছে", reward: 2.00, timer: 20, url: "https://example.com/ad3", completed: false },
-        { id: 4, title: "বিকাশ ক্যাশব্যাক অফার জানুয়ারি ২০২৬", reward: 1.20, timer: 15, url: "https://example.com/ad4", completed: false },
-        { id: 5, title: "অনলাইনে কাজ করে আয় করার সেরা টিপস", reward: 0.80, timer: 10, url: "https://example.com/ad5", completed: false }
-    ],
-    videoTasks: [
-        { id: 1, title: "হাউ টু আর্ন মানি অনলাইনে (গাইড ২০২৬)", reward: 2.50, duration: "45s", completed: false, thumb: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80" },
-        { id: 2, title: "বিকাশ অ্যাকাউন্ট নিরাপদে রাখার উপায়", reward: 1.50, duration: "30s", completed: false, thumb: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80" }
+        { id: 2, title: "BD Internet Package 10GB Offer", reward: 1.00, timer: 10, url: "https://example.com/ad2", completed: false }
     ],
     withdrawals: [
-        { id: "W101", date: "2026-07-23", method: "Bkash", phone: "01712***890", amount: 150.00, status: "Paid" },
-        { id: "W102", date: "2026-07-24", method: "Nagad", phone: "01844***112", amount: 100.00, status: "Approved" }
+        { id: "W101", date: "2026-07-23", method: "Bkash", phone: "01712***890", amount: 150.00, status: "Paid" }
     ],
     isAdmin: false
 };
@@ -41,18 +81,17 @@ function saveState() {
     updateUI();
 }
 
-// --- DOM ELEMENTS & ROUTING ---
+// --- DOM INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
+    renderSportsMatches();
     initSpinWheel();
-    initQuiz();
+    initGames();
     renderPTCAds();
-    renderVideos();
     updateUI();
     initReferralLink();
 });
 
-// Tab Switching Mechanism
 function switchTab(targetId) {
     document.querySelectorAll('.tab-page').forEach(page => page.classList.remove('active'));
     document.querySelectorAll('.nav-link, .bottom-item').forEach(link => link.classList.remove('active'));
@@ -68,79 +107,59 @@ function initNavigation() {
     document.querySelectorAll('[data-target]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const target = link.getAttribute('data-target');
-            switchTab(target);
+            switchTab(link.getAttribute('data-target'));
         });
     });
 
-    // Daily Claim Button
-    const dailyBtn = document.getElementById('claim-daily-btn');
-    if (dailyBtn) {
-        dailyBtn.addEventListener('click', claimDailyBonus);
-    }
+    document.getElementById('claim-daily-btn').addEventListener('click', claimDailyBonus);
+    document.getElementById('admin-toggle-btn').addEventListener('click', toggleAdminMode);
 
-    // Profile & Admin Buttons
     document.getElementById('user-profile-btn').addEventListener('click', () => {
         document.getElementById('profile-name-input').value = appState.user.name;
         document.getElementById('profile-phone-input').value = appState.user.phone;
         openModal('profile-modal');
     });
 
-    document.getElementById('admin-toggle-btn').addEventListener('click', toggleAdminMode);
+    // Sports filter tabs
+    document.querySelectorAll('.sport-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.sport-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderSportsMatches(btn.getAttribute('data-sport'));
+        });
+    });
 }
 
 // --- UI UPDATE ENGINE ---
 function updateUI() {
-    const user = appState.user;
+    const u = appState.user;
+    document.getElementById('user-balance').innerText = u.balance.toFixed(2);
+    document.getElementById('dash-balance').innerText = u.balance.toFixed(2);
+    document.getElementById('dash-total-bets').innerText = u.totalBets;
+    document.getElementById('dash-total-win').innerText = u.totalWin.toFixed(2);
+    document.getElementById('withdraw-current-balance').innerText = u.balance.toFixed(2);
     
-    // Balance displays
-    document.getElementById('user-balance').innerText = user.balance.toFixed(2);
-    document.getElementById('dash-balance').innerText = user.balance.toFixed(2);
-    document.getElementById('dash-total-earned').innerText = user.totalEarned.toFixed(2);
-    document.getElementById('dash-task-completed').innerText = user.tasksCompleted;
-    document.getElementById('withdraw-current-balance').innerText = user.balance.toFixed(2);
-    
-    // User profile sidebar
-    document.getElementById('sidebar-username').innerText = user.name;
-    document.getElementById('sidebar-phone').innerText = user.phone;
-    document.getElementById('sidebar-avatar').innerText = user.name.charAt(0).toUpperCase();
+    document.getElementById('sidebar-username').innerText = u.name;
+    document.getElementById('sidebar-phone').innerText = u.phone;
+    document.getElementById('sidebar-avatar').innerText = u.name.charAt(0).toUpperCase();
 
-    // Referrals
-    document.getElementById('total-referrals-count').innerText = user.referrals;
-    document.getElementById('referral-earnings-count').innerText = user.referralEarnings.toFixed(2);
-    document.getElementById('spins-left-count').innerText = user.spinsLeft;
+    document.getElementById('total-referrals-count').innerText = u.referrals;
+    document.getElementById('referral-earnings-count').innerText = u.referralEarnings.toFixed(2);
+    document.getElementById('spins-left-count').innerText = u.spinsLeft;
 
-    // Render Tables
+    renderUserBetsTable();
     renderUserHistory();
-    renderAdminTable();
-
-    // Daily bonus status check
-    const dailyBtn = document.getElementById('claim-daily-btn');
-    const today = new Date().toDateString();
-    if (user.lastDailyClaim === today) {
-        dailyBtn.disabled = true;
-        dailyBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> আজকের বোনাস নেওয়া হয়েছে';
-        dailyBtn.classList.remove('btn-gold');
-        dailyBtn.classList.add('btn-secondary');
-    }
+    renderAdminTables();
 }
 
-// --- TOAST NOTIFICATIONS ENGINE ---
-function showToast(message, type = 'info') {
+function showToast(msg, type = 'info') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    
-    let icon = 'fa-info-circle';
-    if (type === 'success') icon = 'fa-circle-check text-green';
-    if (type === 'error') icon = 'fa-triangle-exclamation text-red';
-    
-    toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+    toast.innerHTML = `<i class="fa-solid fa-bell"></i> <span>${msg}</span>`;
     container.appendChild(toast);
-    
     setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateX(50px)';
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
@@ -149,379 +168,352 @@ function showToast(message, type = 'info') {
 function claimDailyBonus() {
     const today = new Date().toDateString();
     if (appState.user.lastDailyClaim === today) {
-        showToast("আপনি আজকের বোনাস ইতোমধ্যে ক্লেইম করেছেন!", "error");
+        showToast("আপনি আজকের বোনাস ইতোমধ্যে নিয়াছেন!", "error");
         return;
     }
-    
-    const bonusAmount = 5.00;
-    appState.user.balance += bonusAmount;
-    appState.user.totalEarned += bonusAmount;
+    appState.user.balance += 10.00;
     appState.user.lastDailyClaim = today;
-    
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    showToast(`অভিনন্দন! আপনি ৳${bonusAmount.toFixed(2)} দৈনিক বোনাস পেয়েছেন!`, "success");
+    confetti({ particleCount: 100, spread: 70 });
+    showToast("অভিনন্দন! ৳১০.০০ ডেইলি বেটিং বোনাস ক্লেইম করা হয়েছে!", "success");
     saveState();
 }
 
-// --- PTC ADS SYSTEM ---
-function renderPTCAds() {
-    const container = document.getElementById('ads-container');
+// --- SPORTS BETTING RENDERER ---
+function renderSportsMatches(filter = 'all') {
+    const container = document.getElementById('matches-container');
     container.innerHTML = '';
 
-    appState.ptcAds.forEach(ad => {
-        const adCard = document.createElement('div');
-        adCard.className = `ad-item-card ${ad.completed ? 'completed' : ''}`;
-        adCard.innerHTML = `
-            <div class="ad-header-info">
-                <h4 class="ad-title">${ad.title}</h4>
-                <div class="ad-reward">+৳${ad.reward.toFixed(2)}</div>
-            </div>
-            <div class="ad-details">
-                <span><i class="fa-solid fa-clock"></i> ${ad.timer} সেকেন্ড</span>
-                <span><i class="fa-solid fa-shield"></i> ভেরিফাইড এড</span>
-            </div>
-            <button class="btn ${ad.completed ? 'btn-secondary' : 'btn-primary'}" 
-                    ${ad.completed ? 'disabled' : ''} 
-                    onclick="startPTCAdTask(${ad.id})">
-                ${ad.completed ? '<i class="fa-solid fa-check"></i> সম্পন্ন হয়েছে' : '<i class="fa-solid fa-eye"></i> বিজ্ঞাপন দেখুন'}
-            </button>
-        `;
-        container.appendChild(adCard);
-    });
-}
+    const list = appState.sportsMatches.filter(m => filter === 'all' || m.category === filter);
 
-let activeAd = null;
-let adTimerInterval = null;
-
-function startPTCAdTask(adId) {
-    activeAd = appState.ptcAds.find(a => a.id === adId);
-    if (!activeAd || activeAd.completed) return;
-
-    document.getElementById('ad-modal-title').innerText = activeAd.title;
-    document.getElementById('ad-timer').innerText = activeAd.timer;
-    document.getElementById('ad-progress').style.width = '0%';
-    document.getElementById('ad-quiz-box').style.display = 'none';
-
-    openModal('ad-modal');
-
-    // Simulate timer progress
-    let duration = activeAd.timer;
-    let elapsed = 0;
-
-    clearInterval(adTimerInterval);
-    adTimerInterval = setInterval(() => {
-        elapsed++;
-        let remaining = duration - elapsed;
-        document.getElementById('ad-timer').innerText = remaining;
-        document.getElementById('ad-progress').style.width = `${(elapsed / duration) * 100}%`;
-
-        if (elapsed >= duration) {
-            clearInterval(adTimerInterval);
-            showAdMathVerification();
-        }
-    }, 1000);
-}
-
-function showAdMathVerification() {
-    const quizBox = document.getElementById('ad-quiz-box');
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const correctAnswer = num1 + num2;
-
-    document.getElementById('ad-math-q').innerText = `${num1} + ${num2} =`;
-    document.getElementById('ad-math-a').value = '';
-    quizBox.style.display = 'block';
-
-    document.getElementById('ad-claim-btn').onclick = () => {
-        const userAns = parseInt(document.getElementById('ad-math-a').value);
-        if (userAns === correctAnswer) {
-            activeAd.completed = true;
-            appState.user.balance += activeAd.reward;
-            appState.user.totalEarned += activeAd.reward;
-            appState.user.tasksCompleted += 1;
-
-            closeModal('ad-modal');
-            confetti({ particleCount: 80, spread: 60 });
-            showToast(`টাস্ক সম্পন্ন! আপনি ৳${activeAd.reward.toFixed(2)} অর্জন করেছেন!`, "success");
-            saveState();
-            renderPTCAds();
-        } else {
-            showToast("ভুল উত্তর! আবার চেষ্টা করুন।", "error");
-        }
-    };
-}
-
-// --- VIDEO TASKS SYSTEM ---
-function renderVideos() {
-    const container = document.getElementById('video-container');
-    container.innerHTML = '';
-
-    appState.videoTasks.forEach(vid => {
+    list.forEach(m => {
         const card = document.createElement('div');
-        card.className = 'video-card';
+        card.className = 'match-card';
         card.innerHTML = `
-            <div class="video-thumbnail">
-                <img src="${vid.thumb}" alt="Video thumbnail">
-                <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
+            <div class="match-header">
+                <span><i class="fa-solid fa-trophy text-gold"></i> ${m.tournament}</span>
+                <span class="live-tag">${m.status}</span>
             </div>
-            <div class="video-content">
-                <h4>${vid.title}</h4>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <span style="color:var(--gold); font-weight:700;">+৳${vid.reward.toFixed(2)}</span>
-                    <button class="btn ${vid.completed ? 'btn-secondary' : 'btn-primary'}" 
-                            ${vid.completed ? 'disabled' : ''} 
-                            onclick="watchVideoTask(${vid.id})">
-                        ${vid.completed ? 'দেখা শেষ' : 'ভিডিও দেখুন (' + vid.duration + ')'}
-                    </button>
+
+            <div class="match-teams">
+                <div class="team-box">
+                    <div class="team-flag">${m.team1.flag}</div>
+                    <h4>${m.team1.name}</h4>
                 </div>
+                <div class="vs-badge">VS</div>
+                <div class="team-box">
+                    <div class="team-flag">${m.team2.flag}</div>
+                    <h4>${m.team2.name}</h4>
+                </div>
+            </div>
+
+            <div class="odds-row">
+                <button class="btn-odds" onclick="openBetSlip('${m.id}', '${m.team1.name}', ${m.team1.odds})">
+                    <span>${m.team1.name} Win</span>
+                    <strong>${m.team1.odds.toFixed(2)}x</strong>
+                </button>
+                <button class="btn-odds" onclick="openBetSlip('${m.id}', 'Draw (ড্র)', ${m.drawOdds})">
+                    <span>Match Draw</span>
+                    <strong>${m.drawOdds.toFixed(2)}x</strong>
+                </button>
+                <button class="btn-odds" onclick="openBetSlip('${m.id}', '${m.team2.name}', ${m.team2.odds})">
+                    <span>${m.team2.name} Win</span>
+                    <strong>${m.team2.odds.toFixed(2)}x</strong>
+                </button>
             </div>
         `;
         container.appendChild(card);
     });
 }
 
-function watchVideoTask(vidId) {
-    const vid = appState.videoTasks.find(v => v.id === vidId);
-    if (!vid || vid.completed) return;
+// --- BET SLIP MODAL & BET PLACEMENT ---
+let currentSelectedBet = null;
 
-    showToast("ভিডিও দেখা শুরু হয়েছে... অনুগ্রহ করে অপেক্ষা করুন", "info");
-    setTimeout(() => {
-        vid.completed = true;
-        appState.user.balance += vid.reward;
-        appState.user.totalEarned += vid.reward;
-        appState.user.tasksCompleted += 1;
-        
-        confetti({ particleCount: 70 });
-        showToast(`ভিডিও দেখা সম্পন্ন! আপনি ৳${vid.reward.toFixed(2)} পেয়েছেন!`, "success");
-        saveState();
-        renderVideos();
-    }, 5000); // simulated 5 seconds watch
+function openBetSlip(matchId, optionName, odds) {
+    const match = appState.sportsMatches.find(m => m.id === matchId);
+    if (!match) return;
+
+    currentSelectedBet = {
+        matchId: match.id,
+        matchTitle: `${match.team1.name} vs ${match.team2.name}`,
+        choice: optionName,
+        odds: odds
+    };
+
+    document.getElementById('betslip-match-title').innerText = currentSelectedBet.matchTitle;
+    document.getElementById('betslip-option-name').innerText = currentSelectedBet.choice;
+    document.getElementById('betslip-odds').innerText = odds.toFixed(2) + 'x';
+    document.getElementById('betslip-stake-input').value = 100;
+    
+    calculateBetslipPayout();
+    openModal('bet-modal');
 }
 
-// --- LUCKY SPIN WHEEL CANVAS ---
-const wheelSectors = [
-    { label: "৳১.০০", value: 1.0, color: "#3b82f6" },
-    { label: "৳০.৫০", value: 0.5, color: "#8b5cf6" },
-    { label: "৳২.০০", value: 2.0, color: "#ec4899" },
-    { label: "৳০.২৫", value: 0.25, color: "#10b981" },
-    { label: "৳৩.০০", value: 3.0, color: "#f59e0b" },
-    { label: "try again", value: 0.0, color: "#ef4444" },
-    { label: "৳০.75", value: 0.75, color: "#06b6d4" },
-    { label: "৳৫.০০", value: 5.0, color: "#a855f7" }
-];
-
-let canvas, ctx, currentAngle = 0, isSpinning = false;
-
-function initSpinWheel() {
-    canvas = document.getElementById('wheel-canvas');
-    if (!canvas) return;
-    ctx = canvas.getContext('2d');
-    drawWheel();
-
-    document.getElementById('spin-btn').addEventListener('click', spinWheel);
+function calculateBetslipPayout() {
+    const stake = parseFloat(document.getElementById('betslip-stake-input').value) || 0;
+    const returnVal = stake * (currentSelectedBet ? currentSelectedBet.odds : 1);
+    document.getElementById('betslip-return-amount').innerText = returnVal.toFixed(2);
 }
 
-function drawWheel() {
-    const numSectors = wheelSectors.length;
-    const arc = (2 * Math.PI) / numSectors;
-    const radius = canvas.width / 2;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    wheelSectors.forEach((sec, i) => {
-        const angle = currentAngle + i * arc;
-        ctx.beginPath();
-        ctx.fillStyle = sec.color;
-        ctx.moveTo(radius, radius);
-        ctx.arc(radius, radius, radius - 10, angle, angle + arc);
-        ctx.lineTo(radius, radius);
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#1e293b';
-        ctx.stroke();
-
-        // Text
-        ctx.save();
-        ctx.translate(radius, radius);
-        ctx.rotate(angle + arc / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 14px 'Outfit', sans-serif";
-        ctx.fillText(sec.label, radius - 25, 5);
-        ctx.restore();
-    });
-}
-
-function spinWheel() {
-    if (isSpinning) return;
-    if (appState.user.spinsLeft <= 0) {
-        showToast("আজকের জন্য আপনার স্পিন লিমিট শেষ!", "error");
+function confirmSportsBet() {
+    const stake = parseFloat(document.getElementById('betslip-stake-input').value);
+    if (isNaN(stake) || stake < 10) {
+        showToast("সর্বনিম্ন বেটের পরিমাণ ৳১০.০০", "error");
         return;
     }
 
-    isSpinning = true;
-    appState.user.spinsLeft--;
-
-    const totalRounds = 5 + Math.random() * 3;
-    const randomSector = Math.floor(Math.random() * wheelSectors.length);
-    const sectorArc = (2 * Math.PI) / wheelSectors.length;
-    
-    // Calculate target angle to point pointer to selected sector
-    const targetAngle = (totalRounds * 2 * Math.PI) + (3 * Math.PI / 2) - (randomSector * sectorArc + sectorArc / 2);
-    
-    let startTime = null;
-    const duration = 4000;
-
-    function animateSpin(timestamp) {
-        if (!startTime) startTime = timestamp;
-        const progress = Math.min((timestamp - startTime) / duration, 1);
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        
-        currentAngle = easeOut * targetAngle;
-        drawWheel();
-
-        if (progress < 1) {
-            requestAnimationFrame(animateSpin);
-        } else {
-            isSpinning = false;
-            const won = wheelSectors[randomSector];
-            if (won.value > 0) {
-                appState.user.balance += won.value;
-                appState.user.totalEarned += won.value;
-                confetti({ particleCount: 100, spread: 80 });
-                showToast(`অভিনন্দন! আপনি স্পিন করে ${won.label} জিতেছেন!`, "success");
-            } else {
-                showToast("আবার চেষ্টা করুন! রিওয়ার্ড পয়েন্ট পাননি।", "info");
-            }
-            saveState();
-        }
-    }
-
-    requestAnimationFrame(animateSpin);
-}
-
-// --- MATH QUIZ ENGINE ---
-let quizNum1 = 0, quizNum2 = 0;
-
-function initQuiz() {
-    generateNewQuizQuestion();
-    document.getElementById('quiz-submit-btn').addEventListener('click', checkQuizAnswer);
-}
-
-function generateNewQuizQuestion() {
-    quizNum1 = Math.floor(Math.random() * 20) + 1;
-    quizNum2 = Math.floor(Math.random() * 20) + 1;
-    document.getElementById('quiz-num1').innerText = quizNum1;
-    document.getElementById('quiz-num2').innerText = quizNum2;
-    document.getElementById('quiz-answer-input').value = '';
-}
-
-function checkQuizAnswer() {
-    const inputVal = parseInt(document.getElementById('quiz-answer-input').value);
-    if (isNaN(inputVal)) {
-        showToast("অনুগ্রহ করে একটি সঠিক সংখ্যা লিখুন", "error");
-        return;
-    }
-
-    if (inputVal === (quizNum1 + quizNum2)) {
-        const reward = 0.50;
-        appState.user.balance += reward;
-        appState.user.totalEarned += reward;
-        appState.user.tasksCompleted += 1;
-
-        confetti({ particleCount: 50 });
-        showToast(`সঠিক উত্তর! আপনি ৳${reward.toFixed(2)} আয় করেছেন!`, "success");
-        saveState();
-        generateNewQuizQuestion();
-    } else {
-        showToast("ভুল উত্তর! আবার চেষ্টা করুন।", "error");
-    }
-}
-
-// --- REFERRAL LINK ENGINE ---
-function initReferralLink() {
-    const linkInput = document.getElementById('referral-link');
-    const userRefCode = appState.user.referralCode;
-    linkInput.value = `https://bdclick24.com/?ref=${userRefCode}`;
-
-    document.getElementById('copy-ref-btn').addEventListener('click', () => {
-        navigator.clipboard.writeText(linkInput.value);
-        showToast("রেফারেল লিংক কপি করা হয়েছে!", "success");
-    });
-}
-
-// --- WITHDRAWAL SYSTEM ---
-function handleWithdrawSubmit(event) {
-    event.preventDefault();
-    const method = document.querySelector('input[name="payment_method"]:checked').value;
-    const phone = document.getElementById('withdraw-phone').value;
-    const amount = parseFloat(document.getElementById('withdraw-amount').value);
-
-    if (amount > appState.user.balance) {
+    if (stake > appState.user.balance) {
         showToast("আপনার পর্যাপ্ত ব্যালেন্স নেই!", "error");
         return;
     }
 
-    if (amount < 50) {
-        showToast("সর্বনিম্ন উইথড্র পরিমাণ ৳৫০.০০", "error");
-        return;
-    }
+    // Deduct balance and record bet
+    appState.user.balance -= stake;
+    appState.user.totalBets += 1;
 
-    // Process withdrawal
-    appState.user.balance -= amount;
-    const newRequest = {
-        id: "W" + Math.floor(100 + Math.random() * 900),
-        date: new Date().toISOString().split('T')[0],
-        method: method,
-        phone: phone,
-        amount: amount,
-        status: "Pending"
+    const newBet = {
+        id: "BET" + Math.floor(100 + Math.random() * 900),
+        matchTitle: currentSelectedBet.matchTitle,
+        choice: currentSelectedBet.choice,
+        stake: stake,
+        odds: currentSelectedBet.odds,
+        potentialReturn: stake * currentSelectedBet.odds,
+        status: "Pending",
+        matchId: currentSelectedBet.matchId
     };
 
-    appState.withdrawals.unshift(newRequest);
+    appState.userBets.unshift(newBet);
     saveState();
-
-    document.getElementById('withdraw-form').reset();
-    showToast("পেমেন্ট রিকোয়েস্ট সফলভাবে জমা নেওয়া হয়েছে!", "success");
-    switchTab('history');
+    closeModal('bet-modal');
+    confetti({ particleCount: 80 });
+    showToast("বেট সফলভাবে প্লেস করা হয়েছে!", "success");
+    switchTab('my-bets');
 }
 
-// --- USER HISTORY RENDER ---
-function renderUserHistory() {
-    const tbody = document.getElementById('user-history-tbody');
+// --- INSTANT GAMES (COIN FLIP, DICE, COLOR) ---
+function showMiniGame(gameType) {
+    document.getElementById('game-coin-flip').style.display = gameType === 'coin-flip' ? 'block' : 'none';
+    document.getElementById('game-dice-roll').style.display = gameType === 'dice-roll' ? 'block' : 'none';
+    document.getElementById('game-color-pred').style.display = gameType === 'color-pred' ? 'block' : 'none';
+
+    document.querySelectorAll('.game-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
+
+function setCoinBetAmount(amt) {
+    document.getElementById('coin-bet-amount').value = amt;
+}
+
+function initGames() {
+    // Coin Flip
+    document.getElementById('flip-coin-btn').addEventListener('click', playCoinFlip);
+    // Dice Roll
+    document.getElementById('roll-dice-btn').addEventListener('click', playDiceRoll);
+}
+
+function playCoinFlip() {
+    const stake = parseFloat(document.getElementById('coin-bet-amount').value);
+    if (isNaN(stake) || stake < 10) { showToast("সর্বনিম্ন বেট ৳১০", "error"); return; }
+    if (stake > appState.user.balance) { showToast("পর্যাপ্ত ব্যালেন্স নেই!", "error"); return; }
+
+    const selectedSide = document.querySelector('input[name="coin_side"]:checked').value;
+    const coinEl = document.getElementById('coin-element');
+
+    appState.user.balance -= stake;
+    appState.user.totalBets += 1;
+    saveState();
+
+    const isHeadResult = Math.random() < 0.5;
+    const winningSide = isHeadResult ? "HEAD" : "TAIL";
+
+    // Rotate Coin Animation
+    const rotations = 5 * 360 + (isHeadResult ? 0 : 180);
+    coinEl.style.transform = `rotateY(${rotations}deg)`;
+
+    setTimeout(() => {
+        if (selectedSide === winningSide) {
+            const winAmt = stake * 1.95;
+            appState.user.balance += winAmt;
+            appState.user.totalWin += winAmt;
+            confetti({ particleCount: 90 });
+            showToast(`অভিনন্দন! результат ${winningSide}। আপনি ৳${winAmt.toFixed(2)} জিতেছেন!`, "success");
+        } else {
+            showToast(`ইশ! результат ছিলো ${winningSide}। আপনি হেরেছেন।`, "error");
+        }
+        saveState();
+    }, 2000);
+}
+
+function playDiceRoll() {
+    const stake = parseFloat(document.getElementById('dice-bet-amount').value);
+    if (isNaN(stake) || stake < 10) { showToast("সর্বনিম্ন বেট ৳১০", "error"); return; }
+    if (stake > appState.user.balance) { showToast("পর্যাপ্ত ব্যালেন্স নেই!", "error"); return; }
+
+    const opt = document.querySelector('input[name="dice_opt"]:checked').value;
+    const diceEl = document.getElementById('dice-element');
+
+    appState.user.balance -= stake;
+    appState.user.totalBets += 1;
+    saveState();
+
+    let rollCount = 0;
+    const interval = setInterval(() => {
+        diceEl.innerText = Math.floor(Math.random() * 6) + 1;
+        rollCount++;
+        if (rollCount > 10) {
+            clearInterval(interval);
+            const finalDice = Math.floor(Math.random() * 6) + 1;
+            diceEl.innerText = finalDice;
+
+            let isWin = false;
+            let mult = 2.0;
+
+            if (opt === 'UNDER' && finalDice <= 3) isWin = true;
+            if (opt === 'OVER' && finalDice >= 4) isWin = true;
+            if (opt === 'SIX' && finalDice === 6) { isWin = true; mult = 5.5; }
+
+            if (isWin) {
+                const winAmt = stake * mult;
+                appState.user.balance += winAmt;
+                appState.user.totalWin += winAmt;
+                confetti({ particleCount: 100 });
+                showToast(`অভিনন্দন! ডাইস নম্বর ${finalDice}। আপনি ৳${winAmt.toFixed(2)} জিতেছেন!`, "success");
+            } else {
+                showToast(`ডাইস নম্বর ${finalDice} এসেছে। আপনি হেরেছেন!`, "error");
+            }
+            saveState();
+        }
+    }, 100);
+}
+
+// --- COLOR PREDICTION GAME ---
+function placeColorBet(colorChoice, multiplier) {
+    const stake = 50.0;
+    if (stake > appState.user.balance) { showToast("পর্যাপ্ত ব্যালেন্স নেই!", "error"); return; }
+
+    appState.user.balance -= stake;
+    appState.user.totalBets += 1;
+
+    const colors = ['RED', 'GREEN', 'VIOLET'];
+    const resultColor = colors[Math.floor(Math.random() * colors.length)];
+
+    if (resultColor === colorChoice) {
+        const winAmt = stake * multiplier;
+        appState.user.balance += winAmt;
+        appState.user.totalWin += winAmt;
+        confetti({ particleCount: 80 });
+        showToast(`সঠিক কালার ${resultColor}! আপনি ৳${winAmt.toFixed(2)} জিতেছেন!`, "success");
+    } else {
+        showToast(`ফলাফল ছিলো ${resultColor}! আপনি হেরেছেন।`, "error");
+    }
+    saveState();
+}
+
+// --- USER BETS TABLE RENDER ---
+function renderUserBetsTable() {
+    const tbody = document.getElementById('my-bets-tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
-    if (appState.withdrawals.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">কোনো উইথড্র হিস্ট্রি পাওয়া যায়নি</td></tr>';
+    if (appState.userBets.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">কোনো বেট রেকর্ড নেই</td></tr>';
         return;
     }
 
-    appState.withdrawals.forEach(w => {
+    appState.userBets.forEach(b => {
         const tr = document.createElement('tr');
-        let statusBadge = `<span style="color:var(--gold);"><i class="fa-solid fa-clock"></i> পেন্ডিং</span>`;
-        if (w.status === "Paid" || w.status === "Approved") {
-            statusBadge = `<span style="color:var(--green);"><i class="fa-solid fa-circle-check"></i> পেইড</span>`;
-        } else if (w.status === "Rejected") {
-            statusBadge = `<span style="color:var(--red);"><i class="fa-solid fa-circle-xmark"></i> বাতিল</span>`;
-        }
+        let statusTag = `<span style="color:var(--gold);"><i class="fa-solid fa-clock"></i> পেন্ডিং</span>`;
+        if (b.status === 'Won') statusTag = `<span style="color:var(--green);"><i class="fa-solid fa-trophy"></i> উইন</span>`;
+        if (b.status === 'Lost') statusTag = `<span style="color:var(--red);"><i class="fa-solid fa-times-circle"></i> লস্ট</span>`;
 
         tr.innerHTML = `
-            <td>${w.date}</td>
-            <td><span class="${w.method.toLowerCase()}-badge">${w.method}</span></td>
-            <td>${w.phone}</td>
-            <td>৳${w.amount.toFixed(2)}</td>
-            <td>${statusBadge}</td>
+            <td>#${b.id}</td>
+            <td>${b.matchTitle}</td>
+            <td><strong>${b.choice}</strong> (${b.odds.toFixed(2)}x)</td>
+            <td>৳${b.stake.toFixed(2)}</td>
+            <td class="text-green">৳${b.potentialReturn.toFixed(2)}</td>
+            <td>${statusTag}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// --- ADMIN PANEL CONTROL ---
+// --- PTC ADS RENDER ---
+function renderPTCAds() {
+    const container = document.getElementById('ads-container');
+    if (!container) return;
+    container.innerHTML = '';
+    appState.ptcAds.forEach(ad => {
+        const adCard = document.createElement('div');
+        adCard.className = 'ad-item-card';
+        adCard.innerHTML = `
+            <div class="ad-header-info">
+                <h4 class="ad-title">${ad.title}</h4>
+                <div class="ad-reward">+৳${ad.reward.toFixed(2)}</div>
+            </div>
+            <button class="btn btn-primary margin-top" onclick="showToast('এড লোড হচ্ছে...', 'info')">বিজ্ঞাপন দেখুন</button>
+        `;
+        container.appendChild(adCard);
+    });
+}
+
+// --- SPIN WHEEL ---
+function initSpinWheel() {
+    const canvas = document.getElementById('wheel-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const sectors = ["৳১.০০", "৳০.৫০", "৳২.০০", "৳০.২৫", "৳৩.০০", "TRY AGAIN", "৳০.৭৫", "৳৫.০০"];
+    const colors = ["#3b82f6", "#8b5cf6", "#ec4899", "#10b981", "#f59e0b", "#ef4444", "#06b6d4", "#a855f7"];
+    const arc = (2 * Math.PI) / sectors.length;
+
+    sectors.forEach((sec, i) => {
+        ctx.beginPath();
+        ctx.fillStyle = colors[i];
+        ctx.moveTo(170, 170);
+        ctx.arc(170, 170, 160, i * arc, (i + 1) * arc);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(170, 170);
+        ctx.rotate(i * arc + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 14px 'Outfit', sans-serif";
+        ctx.fillText(sec, 140, 5);
+        ctx.restore();
+    });
+}
+
+// --- WITHDRAW SUBMIT ---
+function handleWithdrawSubmit(e) {
+    e.preventDefault();
+    const method = document.querySelector('input[name="payment_method"]:checked').value;
+    const phone = document.getElementById('withdraw-phone').value;
+    const amount = parseFloat(document.getElementById('withdraw-amount').value);
+
+    if (amount > appState.user.balance) { showToast("আপনার পর্যাপ্ত ব্যালেন্স নেই!", "error"); return; }
+    if (amount < 50) { showToast("সর্বনিম্ন উইথড্র ৳৫০.০০", "error"); return; }
+
+    appState.user.balance -= amount;
+    appState.withdrawals.unshift({
+        id: "W" + Math.floor(100 + Math.random() * 900),
+        date: new Date().toISOString().split('T')[0],
+        method, phone, amount, status: "Pending"
+    });
+
+    saveState();
+    showToast("পেমেন্ট রিকোয়েস্ট সফলভাবে জমা দেওয়া হয়েছে!", "success");
+    switchTab('my-bets');
+}
+
+function renderUserHistory() {
+    // User payment history helper
+}
+
+// --- ADMIN CONTROL & MATCH SETTLEMENT ---
 function toggleAdminMode() {
     appState.isAdmin = !appState.isAdmin;
-    const adminLink = document.querySelectorAll('.admin-only-link');
-    adminLink.forEach(el => el.style.display = appState.isAdmin ? 'flex' : 'none');
-
+    document.querySelectorAll('.admin-only-link').forEach(el => el.style.display = appState.isAdmin ? 'flex' : 'none');
     if (appState.isAdmin) {
         showToast("অ্যাডমিন মোড সক্রিয় করা হয়েছে!", "info");
         switchTab('admin-panel');
@@ -531,71 +523,82 @@ function toggleAdminMode() {
     }
 }
 
-function renderAdminTable() {
+function renderAdminTables() {
     const tbody = document.getElementById('admin-withdraw-tbody');
-    if (!tbody) return;
+    const matchesTbody = document.getElementById('admin-matches-tbody');
+    if (!tbody || !matchesTbody) return;
+
+    // Matches Settlement Control
+    matchesTbody.innerHTML = '';
+    appState.sportsMatches.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${m.team1.name} vs ${m.team2.name}</strong></td>
+            <td>${m.team1.name} / Draw / ${m.team2.name}</td>
+            <td>
+                ${!m.settled ? `
+                    <button class="btn btn-green" onclick="settleMatch('${m.id}', '${m.team1.name}')" style="padding:4px 8px; font-size:0.8rem;">Win: ${m.team1.name}</button>
+                    <button class="btn btn-gold" onclick="settleMatch('${m.id}', '${m.team2.name}')" style="padding:4px 8px; font-size:0.8rem;">Win: ${m.team2.name}</button>
+                ` : `<span class="text-green">Settled (${m.winner})</span>`}
+            </td>
+        `;
+        matchesTbody.appendChild(tr);
+    });
+
+    // Withdrawals
     tbody.innerHTML = '';
-
-    let pendingCount = 0, paidCount = 0;
-
     appState.withdrawals.forEach((w, index) => {
-        if (w.status === 'Pending') pendingCount++;
-        if (w.status === 'Paid' || w.status === 'Approved') paidCount++;
-
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>#${w.id}</td>
             <td>${appState.user.name}</td>
-            <td><span class="${w.method.toLowerCase()}-badge">${w.method}</span></td>
+            <td>${w.method}</td>
             <td>${w.phone}</td>
             <td>৳${w.amount.toFixed(2)}</td>
             <td>
                 ${w.status === 'Pending' ? `
                     <button class="btn btn-green" onclick="approveWithdrawal(${index})" style="padding:4px 8px; font-size:0.8rem;">অনুমোদন</button>
-                    <button class="btn btn-secondary" onclick="rejectWithdrawal(${index})" style="padding:4px 8px; font-size:0.8rem; background:var(--red);">বাতিল</button>
-                ` : `<span style="font-size:0.8rem; color:var(--text-secondary);">${w.status}</span>`}
+                ` : `<span>${w.status}</span>`}
             </td>
         `;
         tbody.appendChild(tr);
     });
-
-    document.getElementById('admin-pending-count').innerText = pendingCount;
-    document.getElementById('admin-paid-count').innerText = paidCount;
 }
 
-function approveWithdrawal(index) {
-    appState.withdrawals[index].status = "Paid";
-    showToast("পেমেন্ট সফলভাবে অনুমোদন করা হয়েছে!", "success");
+function settleMatch(matchId, winnerName) {
+    const match = appState.sportsMatches.find(m => m.id === matchId);
+    if (!match || match.settled) return;
+
+    match.settled = true;
+    match.winner = winnerName;
+
+    // Settle all user bets for this match
+    appState.userBets.forEach(b => {
+        if (b.matchId === matchId && b.status === "Pending") {
+            if (b.choice === winnerName) {
+                b.status = "Won";
+                appState.user.balance += b.potentialReturn;
+                appState.user.totalWin += b.potentialReturn;
+            } else {
+                b.status = "Lost";
+            }
+        }
+    });
+
+    showToast(`ম্যাচ সাকসেসফুলি সেটেল করা হয়েছে! বিজয়ী: ${winnerName}`, "success");
     saveState();
 }
 
-function rejectWithdrawal(index) {
-    const w = appState.withdrawals[index];
-    w.status = "Rejected";
-    appState.user.balance += w.amount; // Refund
-    showToast("পেমেন্ট বাতিল করা হয়েছে এবং ব্যালেন্স ফেরত দেওয়া হয়েছে", "info");
+function approveWithdrawal(idx) {
+    appState.withdrawals[idx].status = "Paid";
+    showToast("উইথড্র রিকোয়েস্ট অনুমোদিত হয়েছে!", "success");
     saveState();
 }
 
-// --- PROFILE SAVING ---
-function saveUserProfile(e) {
-    e.preventDefault();
-    const name = document.getElementById('profile-name-input').value;
-    const phone = document.getElementById('profile-phone-input').value;
-
-    if (name && phone) {
-        appState.user.name = name;
-        appState.user.phone = phone;
-        saveState();
-        closeModal('profile-modal');
-        showToast("প্রোফাইল আপডেট হয়েছে!", "success");
-    }
+function initReferralLink() {
+    const linkInput = document.getElementById('referral-link');
+    if (linkInput) linkInput.value = `https://bdclick24.com/?ref=${appState.user.referralCode}`;
 }
 
-// --- MODAL UTILITY ---
-function openModal(id) {
-    document.getElementById(id).classList.add('active');
-}
-function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
-}
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
