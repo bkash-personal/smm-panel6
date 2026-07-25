@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="col-lg-6 d-none d-lg-flex auth-hero">
+      <div>
+        <h1 class="brand-title mb-3"><i class="bi bi-rocket-takeoff-fill"></i> SMM Panel</h1>
+        <p class="fs-5 opacity-75">দ্রুত, নির্ভরযোগ্য এবং সাশ্রয়ী দামে Facebook, Instagram, YouTube, TikTok সোশ্যাল মিডিয়া মার্কেটিং সার্ভিস।</p>
+        <ul class="list-unstyled mt-4 fs-6">
+          <li class="mb-2"><i class="bi bi-check-circle-fill me-2"></i> ইনস্ট্যান্ট অর্ডার প্রসেসিং</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill me-2"></i> bKash / Nagad / Rocket পেমেন্ট</li>
+          <li class="mb-2"><i class="bi bi-check-circle-fill me-2"></i> ২৪/৭ সাপোর্ট</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-lg-6 auth-form-side">
+      <div class="auth-card p-4">
+        <h3 class="mb-1">স্বাগতম 👋</h3>
+        <p class="text-muted mb-4">আপনার অ্যাকাউন্টে লগইন করুন</p>
+        <div id="errorBox" class="alert alert-danger py-2 d-none"></div>
+        <form id="loginForm">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="username" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" required />
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2">লগইন করুন</button>
+        </form>
+        <p class="text-center mt-3 mb-0">
+          অ্যাকাউন্ট নেই? <a href="register.html" class="fw-semibold">রেজিস্টার করুন</a>
+        </p>
+        <p class="text-center text-muted small mt-2">Default admin: admin / admin123</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const result = loginUser(username, password);
+      const errorBox = document.getElementById('errorBox');
+      if (!result.ok) {
+        errorBox.textContent = result.error;
+        errorBox.classList.remove('d-none');
+        return;
+      }
+      window.location.href = result.user.role === 'admin' ? 'admin/dashboard.html' : 'dashboard.html';
+    });
+  </script>
+</body>
+</html>

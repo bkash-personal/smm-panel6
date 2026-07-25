@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Orders - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container py-4">
+    <h3 class="mb-4">📦 সকল অর্ডার</h3>
+    <div class="card p-3">
+      <table class="table table-hover">
+        <thead>
+          <tr><th>ID</th><th>User</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th><th>Update</th></tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    if (requireAdmin()) {
+      renderNavbar('../');
+      const statuses = ['Pending', 'Processing', 'Completed', 'Partial', 'Canceled'];
+
+      function renderOrders() {
+        const orders = getData(DB_KEYS.orders, []).slice().reverse();
+        const users = getData(DB_KEYS.users, []);
+        const body = document.getElementById('ordersBody');
+
+        if (orders.length === 0) {
+          body.innerHTML = '<tr><td colspan="7" class="text-center text-muted">কোনো অর্ডার নেই</td></tr>';
+          return;
+        }
+
+        body.innerHTML = orders
+          .map((o) => {
+            const u = users.find((usr) => usr.id === o.userId);
+            const options = statuses
+              .map((st) => `<option value="${st}" ${o.status === st ? 'selected' : ''}>${st}</option>`)
+              .join('');
+            return `<tr>
+              <td>#${o.id}</td>
+              <td>${u ? u.username : 'Unknown'}</td>
+              <td>${o.serviceName}</td>
+              <td>${o.quantity}</td>
+              <td>৳${o.charge.toFixed(2)}</td>
+              <td><span class="badge badge-${o.status.toLowerCase()}">${o.status}</span></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <select class="form-select form-select-sm" id="status-${o.id}">${options}</select>
+                  <button class="btn btn-sm btn-primary" onclick="updateStatus(${o.id})">Update</button>
+                </div>
+              </td>
+            </tr>`;
+          })
+          .join('');
+      }
+
+      function updateStatus(id) {
+        const orders = getData(DB_KEYS.orders, []);
+        const order = orders.find((o) => o.id === id);
+        const select = document.getElementById('status-' + id);
+        if (order && select) {
+          order.status = select.value;
+          setData(DB_KEYS.orders, orders);
+          renderOrders();
+        }
+      }
+      window.updateStatus = updateStatus;
+
+      renderOrders();
+    }
+  </script>
+</body>
+</html>

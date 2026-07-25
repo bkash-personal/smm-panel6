@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Order - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container py-4">
+    <h3 class="mb-4">🛒 নতুন অর্ডার</h3>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card p-4">
+          <div id="errorBox" class="alert alert-danger d-none"></div>
+          <div id="successBox" class="alert alert-success d-none"></div>
+
+          <form id="orderForm">
+            <div class="mb-3">
+              <label class="form-label">Service</label>
+              <select id="serviceSelect" class="form-select" required>
+                <option value="">-- সার্ভিস নির্বাচন করুন --</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Link (প্রোফাইল/পোস্ট/ভিডিও লিংক)</label>
+              <input type="url" id="link" class="form-control" placeholder="https://..." required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Quantity</label>
+              <input type="number" id="quantity" class="form-control" required />
+              <small class="text-muted" id="minMaxHint"></small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Estimated Charge</label>
+              <input type="text" id="chargePreview" class="form-control" value="৳0.00" disabled />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-cart-check"></i> অর্ডার করুন</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let currentUser = requireLogin();
+    if (currentUser) {
+      renderNavbar();
+
+      const services = getData(DB_KEYS.services, []);
+      const serviceSelect = document.getElementById('serviceSelect');
+      services.forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.dataset.rate = s.rate;
+        opt.dataset.min = s.min;
+        opt.dataset.max = s.max;
+        opt.textContent = `${s.category} - ${s.name} (৳${s.rate}/1000)`;
+        serviceSelect.appendChild(opt);
+      });
+
+      const quantityInput = document.getElementById('quantity');
+      const chargePreview = document.getElementById('chargePreview');
+      const minMaxHint = document.getElementById('minMaxHint');
+
+      function updatePreview() {
+        const opt = serviceSelect.options[serviceSelect.selectedIndex];
+        const rate = parseFloat(opt.dataset.rate || 0);
+        const qty = parseInt(quantityInput.value || 0, 10);
+        minMaxHint.textContent = opt.value ? `Min: ${opt.dataset.min}, Max: ${opt.dataset.max}` : '';
+        const charge = (rate / 1000) * qty;
+        chargePreview.value = '৳' + (isNaN(charge) ? '0.00' : charge.toFixed(2));
+      }
+      serviceSelect.addEventListener('change', updatePreview);
+      quantityInput.addEventListener('input', updatePreview);
+
+      document.getElementById('orderForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const errorBox = document.getElementById('errorBox');
+        const successBox = document.getElementById('successBox');
+        errorBox.classList.add('d-none');
+        successBox.classList.add('d-none');
+
+        const services = getData(DB_KEYS.services, []);
+        const service = services.find((s) => s.id === parseInt(serviceSelect.value, 10));
+        const link = document.getElementById('link').value.trim();
+        const qty = parseInt(quantityInput.value, 10);
+
+        if (!service || !link || !qty) {
+          errorBox.textContent = 'সব ফিল্ড ঠিকভাবে পূরণ করুন।';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+        if (qty < service.min || qty > service.max) {
+          errorBox.textContent = `কোয়ান্টিটি ${service.min} থেকে ${service.max} এর মধ্যে হতে হবে।`;
+          errorBox.classList.remove('d-none');
+          return;
+        }
+
+        const charge = Math.ceil((service.rate / 1000) * qty);
+        currentUser = getCurrentUser();
+        if (currentUser.balance < charge) {
+          errorBox.textContent = 'পর্যাপ্ত ব্যালেন্স নেই। Add Funds করুন।';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+
+        currentUser.balance -= charge;
+        saveUser(currentUser);
+
+        const orders = getData(DB_KEYS.orders, []);
+        const order = {
+          id: nextId('order'),
+          userId: currentUser.id,
+          serviceId: service.id,
+          serviceName: service.name,
+          link,
+          quantity: qty,
+          charge,
+          status: 'Pending',
+          createdAt: new Date().toISOString()
+        };
+        orders.push(order);
+        setData(DB_KEYS.orders, orders);
+
+        successBox.textContent = `অর্ডার সফল হয়েছে! Order ID: ${order.id}`;
+        successBox.classList.remove('d-none');
+        document.getElementById('orderForm').reset();
+        chargePreview.value = '৳0.00';
+        renderNavbar();
+      });
+    }
+  </script>
+</body>
+</html>

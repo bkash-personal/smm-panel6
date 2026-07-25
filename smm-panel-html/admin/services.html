@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Services - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container py-4">
+    <h3 class="mb-4">⚙️ সার্ভিস ম্যানেজমেন্ট</h3>
+
+    <div class="card p-3 mb-4">
+      <h5>নতুন সার্ভিস যোগ করুন</h5>
+      <form id="addServiceForm" class="row g-2 mt-1">
+        <div class="col-md-2"><input type="text" id="category" class="form-control" placeholder="Category" required /></div>
+        <div class="col-md-3"><input type="text" id="name" class="form-control" placeholder="Service Name" required /></div>
+        <div class="col-md-1"><input type="number" step="0.01" id="rate" class="form-control" placeholder="Rate/1000" required /></div>
+        <div class="col-md-1"><input type="number" id="min" class="form-control" placeholder="Min" required /></div>
+        <div class="col-md-1"><input type="number" id="max" class="form-control" placeholder="Max" required /></div>
+        <div class="col-md-3"><input type="text" id="description" class="form-control" placeholder="Description" /></div>
+        <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">Add</button></div>
+      </form>
+    </div>
+
+    <div class="card p-3">
+      <table class="table table-hover">
+        <thead>
+          <tr><th>ID</th><th>Category</th><th>Name</th><th>Rate/1000</th><th>Min</th><th>Max</th><th></th></tr>
+        </thead>
+        <tbody id="servicesBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    if (requireAdmin()) {
+      renderNavbar('../');
+
+      function renderServices() {
+        const services = getData(DB_KEYS.services, []);
+        document.getElementById('servicesBody').innerHTML = services
+          .map(
+            (s) => `<tr>
+              <td>${s.id}</td>
+              <td>${s.category}</td>
+              <td>${s.name}</td>
+              <td>৳${s.rate}</td>
+              <td>${s.min}</td>
+              <td>${s.max}</td>
+              <td><button class="btn btn-sm btn-outline-danger" onclick="deleteService(${s.id})">Delete</button></td>
+            </tr>`
+          )
+          .join('');
+      }
+
+      function deleteService(id) {
+        if (!confirm('মুছে ফেলতে চান?')) return;
+        let services = getData(DB_KEYS.services, []);
+        services = services.filter((s) => s.id !== id);
+        setData(DB_KEYS.services, services);
+        renderServices();
+      }
+      window.deleteService = deleteService;
+
+      document.getElementById('addServiceForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const services = getData(DB_KEYS.services, []);
+        services.push({
+          id: nextId('service'),
+          category: document.getElementById('category').value,
+          name: document.getElementById('name').value,
+          rate: parseFloat(document.getElementById('rate').value),
+          min: parseInt(document.getElementById('min').value, 10),
+          max: parseInt(document.getElementById('max').value, 10),
+          description: document.getElementById('description').value
+        });
+        setData(DB_KEYS.services, services);
+        this.reset();
+        renderServices();
+      });
+
+      renderServices();
+    }
+  </script>
+</body>
+</html>

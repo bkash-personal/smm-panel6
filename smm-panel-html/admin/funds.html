@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fund Requests - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="../css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container py-4">
+    <h3 class="mb-4">💵 Fund Requests</h3>
+    <div class="card p-3">
+      <table class="table table-hover">
+        <thead>
+          <tr><th>ID</th><th>User</th><th>Method</th><th>Trx ID</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody id="fundsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    if (requireAdmin()) {
+      renderNavbar('../');
+
+      function renderFunds() {
+        const funds = getData(DB_KEYS.funds, []).slice().reverse();
+        const users = getData(DB_KEYS.users, []);
+        const body = document.getElementById('fundsBody');
+
+        if (funds.length === 0) {
+          body.innerHTML = '<tr><td colspan="7" class="text-center text-muted">কোনো রিকোয়েস্ট নেই</td></tr>';
+          return;
+        }
+
+        body.innerHTML = funds
+          .map((f) => {
+            const u = users.find((usr) => usr.id === f.userId);
+            const actions =
+              f.status === 'Pending'
+                ? `<button class="btn btn-sm btn-success" onclick="approveFund(${f.id})">Approve</button>
+                   <button class="btn btn-sm btn-danger" onclick="rejectFund(${f.id})">Reject</button>`
+                : '';
+            return `<tr>
+              <td>#${f.id}</td>
+              <td>${u ? u.username : 'Unknown'}</td>
+              <td>${f.method}</td>
+              <td>${f.trxId}</td>
+              <td>৳${f.amount.toFixed(2)}</td>
+              <td>${f.status}</td>
+              <td>${actions}</td>
+            </tr>`;
+          })
+          .join('');
+      }
+
+      function approveFund(id) {
+        const funds = getData(DB_KEYS.funds, []);
+        const request = funds.find((f) => f.id === id);
+        if (request && request.status === 'Pending') {
+          request.status = 'Approved';
+          setData(DB_KEYS.funds, funds);
+
+          const users = getData(DB_KEYS.users, []);
+          const user = users.find((u) => u.id === request.userId);
+          if (user) {
+            user.balance += request.amount;
+            setData(DB_KEYS.users, users);
+          }
+          renderFunds();
+        }
+      }
+      window.approveFund = approveFund;
+
+      function rejectFund(id) {
+        const funds = getData(DB_KEYS.funds, []);
+        const request = funds.find((f) => f.id === id);
+        if (request) {
+          request.status = 'Rejected';
+          setData(DB_KEYS.funds, funds);
+          renderFunds();
+        }
+      }
+      window.rejectFund = rejectFund;
+
+      renderFunds();
+    }
+  </script>
+</body>
+</html>

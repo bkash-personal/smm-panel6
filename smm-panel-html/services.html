@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container py-4">
+    <h3 class="mb-4">📋 সার্ভিস ও প্রাইস লিস্ট</h3>
+    <div id="serviceGroups"></div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if (requireLogin()) {
+      renderNavbar();
+      const services = getData(DB_KEYS.services, []);
+      const grouped = {};
+      services.forEach((s) => {
+        if (!grouped[s.category]) grouped[s.category] = [];
+        grouped[s.category].push(s);
+      });
+
+      const container = document.getElementById('serviceGroups');
+      container.innerHTML = Object.keys(grouped)
+        .map(
+          (category) => `
+        <div class="card p-3 mb-3">
+          <h5>${category}</h5>
+          <table class="table table-sm mt-2">
+            <thead><tr><th>Service</th><th>Rate / 1000</th><th>Min</th><th>Max</th><th>Description</th></tr></thead>
+            <tbody>
+              ${grouped[category]
+                .map(
+                  (s) => `<tr>
+                    <td>${s.name}</td>
+                    <td>৳${s.rate}</td>
+                    <td>${s.min}</td>
+                    <td>${s.max}</td>
+                    <td class="text-muted small">${s.description}</td>
+                  </tr>`
+                )
+                .join('')}
+            </tbody>
+          </table>
+        </div>`
+        )
+        .join('');
+    }
+  </script>
+</body>
+</html>

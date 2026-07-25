@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <title>SMM Panel</title>
+  <script src="js/app.js"></script>
+  <script>
+    const user = getCurrentUser();
+    if (user) {
+      window.location.href = user.role === 'admin' ? 'admin/dashboard.html' : 'dashboard.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  </script>
+</head>
+<body></body>
+</html>

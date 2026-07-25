@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Funds - SMM Panel</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container py-4">
+    <h3 class="mb-4"><i class="bi bi-wallet2"></i> Add Funds</h3>
+
+    <div class="row justify-content-center">
+      <div class="col-md-7">
+        <div class="card p-4 mb-3">
+          <h5 class="mb-3">পেমেন্ট মেথড নির্বাচন করুন</h5>
+          <div class="row g-3 mb-3">
+            <div class="col-4">
+              <div class="pay-method active" data-method="bKash" data-number="01700-000000">
+                <div class="pay-emoji">📱</div>
+                <div class="pay-method-name">bKash</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="pay-method" data-method="Nagad" data-number="01800-000000">
+                <div class="pay-emoji">💳</div>
+                <div class="pay-method-name">Nagad</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="pay-method" data-method="Rocket" data-number="01900-000000-1">
+                <div class="pay-emoji">🚀</div>
+                <div class="pay-method-name">Rocket</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-info d-flex align-items-center gap-2 mb-0">
+            <i class="bi bi-info-circle-fill fs-5"></i>
+            <div>
+              <strong id="methodLabel">bKash</strong> Personal নাম্বারে <strong>Send Money</strong> করুন:
+              <div class="fs-5 fw-bold mt-1" id="methodNumber">01700-000000</div>
+              <small class="text-muted">টাকা পাঠানোর পর নিচের ফর্মে Transaction ID ও Amount দিয়ে সাবমিট করুন। অ্যাডমিন যাচাই করে ব্যালেন্স যোগ করে দেবেন।</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <div id="errorBox" class="alert alert-danger d-none"></div>
+          <div id="successBox" class="alert alert-success d-none"></div>
+          <form id="fundForm">
+            <div class="mb-3">
+              <label class="form-label">Transaction ID</label>
+              <input type="text" id="trxId" class="form-control" placeholder="যেমনঃ 8N7A2K9XYZ" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Amount (৳)</label>
+              <input type="number" step="0.01" id="amount" class="form-control" placeholder="যত টাকা পাঠিয়েছেন" required />
+            </div>
+            <button type="submit" class="btn btn-success w-100 py-2"><i class="bi bi-send-check"></i> Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    const user = requireLogin();
+    if (user) {
+      renderNavbar();
+
+      let selectedMethod = 'bKash';
+      document.querySelectorAll('.pay-method').forEach((el) => {
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.pay-method').forEach((m) => m.classList.remove('active'));
+          el.classList.add('active');
+          selectedMethod = el.dataset.method;
+          document.getElementById('methodLabel').textContent = el.dataset.method;
+          document.getElementById('methodNumber').textContent = el.dataset.number;
+        });
+      });
+
+      document.getElementById('fundForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const errorBox = document.getElementById('errorBox');
+        const successBox = document.getElementById('successBox');
+        errorBox.classList.add('d-none');
+        successBox.classList.add('d-none');
+
+        const trxId = document.getElementById('trxId').value.trim();
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (!trxId || !amount || amount <= 0) {
+          errorBox.textContent = 'সব ফিল্ড সঠিকভাবে পূরণ করুন।';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+
+        const funds = getData(DB_KEYS.funds, []);
+        funds.push({
+          id: nextId('fund'),
+          userId: user.id,
+          method: selectedMethod,
+          trxId,
+          amount,
+          status: 'Pending',
+          createdAt: new Date().toISOString()
+        });
+        setData(DB_KEYS.funds, funds);
+
+        successBox.textContent = 'আপনার রিকোয়েস্ট জমা হয়েছে। অ্যাডমিন যাচাই করার পর ব্যালেন্স যোগ হবে।';
+        successBox.classList.remove('d-none');
+        document.getElementById('fundForm').reset();
+      });
+    }
+  </script>
+</body>
+</html>
